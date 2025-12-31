@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Phone Seller Store</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+        integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Example CSS for better form display */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ccc;
+            border-radius: 0.25rem;
+            font-size: 1rem;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: #66afe9;
+            outline: 0;
+            box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6);
+        }
+
+        .error-message {
+            color: red;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100">
+    <!-- Header (consistent across all pages) -->
+    <header class="bg-white shadow-md">
+        <nav class="container mx-auto py-4 px-6">
+            <div class="flex items-center justify-between">
+                <a href="index.html" class="text-2xl font-bold text-gray-800">Phone Seller</a>
+                <div class="flex items-center space-x-4">
+                    <a href="index.html" class="text-gray-600 hover:text-gray-800">Home</a>
+                    <a href="product.html" class="text-gray-600 hover:text-gray-800">Products</a>
+                    <a href="cart.html" class="text-gray-600 hover:text-gray-800">Cart</a>
+                    <a href="contact.html" class="text-gray-600 hover:text-gray-800">Contact</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto mt-8 p-6 bg-white shadow-md rounded-md">
+        <h1 class="text-2xl font-semibold mb-6">Checkout</h1>
+
+        <form id="checkoutForm" onsubmit="return validateForm()">
+            <!-- Shipping Information -->
+            <section class="mb-6">
+                <h2 class="text-xl font-semibold mb-4">Shipping Information</h2>
+                <div class="form-group">
+                    <label for="shippingName">Full Name:</label>
+                    <input type="text" id="shippingName" name="shippingName" placeholder="John Doe" required>
+                    <div id="shippingNameError" class="error-message"></div>
+                </div>
+                <div class="form-group">
+                    <label for="shippingAddress">Address:</label>
+                    <input type="text" id="shippingAddress" name="shippingAddress" placeholder="123 Main St"
+                        required>
+                    <div id="shippingAddressError" class="error-message"></div>
+                </div>
+                <div class="form-group">
+                    <label for="shippingCity">City:</label>
+                    <input type="text" id="shippingCity" name="shippingCity" placeholder="Anytown" required>
+                    <div id="shippingCityError" class="error-message"></div>
+                </div>
+                <div class="form-group">
+                    <label for="shippingState">State:</label>
+                    <input type="text" id="shippingState" name="shippingState" placeholder="CA" required>
+                    <div id="shippingStateError" class="error-message"></div>
+                </div>
+                <div class="form-group">
+                    <label for="shippingZip">Zip Code:</label>
+                    <input type="text" id="shippingZip" name="shippingZip" placeholder="12345" required>
+                    <div id="shippingZipError" class="error-message"></div>
+                </div>
+            </section>
+
+            <!-- Billing Information -->
+            <section class="mb-6">
+                <h2 class="text-xl font-semibold mb-4">Billing Information</h2>
+                <div class="form-group">
+                    <label for="billingName">Full Name:</label>
+                    <input type="text" id="billingName" name="billingName" placeholder="John Doe" required>
+                    <div id="billingNameError" class="error-message"></div>
+                </div>
+                <div class="form-group">
+                    <label for="billingAddress">Address:</label>
+                    <input type="text" id="billingAddress" name="billingAddress" placeholder="123 Main St" required>
+                    <div id="billingAddressError" class="error-message"></div>
+                </div>
+                <div class="form-group">
+                    <label for="billingCity">City:</label>
+                    <input type="text" id="billingCity" name="billingCity" placeholder="Anytown" required>
+                    <div id="billingCityError" class="error-message"></div>
+                </div>
+                <div class="form-group">
+                    <label for="billingState">State:</label>
+                    <input type="text" id="billingState" name="billingState" placeholder="CA" required>
+                    <div id="billingStateError" class="error-message"></div>
+                </div>
+                <div class="form-group">
+                    <label for="billingZip">Zip Code:</label>
+                    <input type="text" id="billingZip" name="billingZip" placeholder="12345" required>
+                    <div id="billingZipError" class="error-message"></div>
+                </div>
+            </section>
+
+            <!-- Payment Information -->
+            <section class="mb-6">
+                <h2 class="text-xl font-semibold mb-4">Payment Information</h2>
+                <div class="form-group">
+                    <label for="cardNumber">Card Number:</label>
+                    <input type="text" id="cardNumber" name="cardNumber" placeholder="1234-5678-9012-3456" required>
+                    <div id="cardNumberError" class="error-message"></div>
+                </div>
+                <div class="form-group">
+                    <label for="cardExpiry">Expiry Date:</label>
+                    <input type="text" id="cardExpiry" name="cardExpiry" placeholder="MM/YY" required>
+                    <div id="cardExpiryError" class="error-message"></div>
+                </div>
+                <div class="form-group">
+                    <label for="cardCVC">CVC:</label>
+                    <input type="text" id="cardCVC" name="cardCVC" placeholder="123" required>
+                    <div id="cardCVCError" class="error-message"></div>
+                </div>
+            </section>
+
+            <!-- Order Summary -->
+            <section class="mb-6">
+                <h2 class="text-xl font-semibold mb-4">Order Summary</h2>
+                <div id="orderSummary">
+                    <!-- Order summary items will be dynamically added here using JavaScript -->
+                    <p>Subtotal: $199.99</p>
+                    <p>Shipping: $9.99</p>
+                    <p class="font-semibold">Total: $209.98</p>
+                </div>
+            </section>
+
+            <button type="submit"
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Place Order</button>
+        </form>
+    </main>
+
+    <!-- Footer (consistent across all pages) -->
+    <footer class="bg-gray-200 py-4 text-center">
+        <p>&copy; 2024 Phone Seller Store. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // @ts-check
+        /**
+         * Validates the checkout form before submission.
+         * @returns {boolean} True if the form is valid, false otherwise.
+         */
+        function validateForm() {
+            let isValid = true;
+
+            isValid = validateField("shippingName", "shippingNameError") && isValid;
+            isValid = validateField("shippingAddress", "shippingAddressError") && isValid;
+            isValid = validateField("shippingCity", "shippingCityError") && isValid;
+            isValid = validateField("shippingState", "shippingStateError") && isValid;
+            isValid = validateField("shippingZip", "shippingZipError") && isValid;
+
+            isValid = validateField("billingName", "billingNameError") && isValid;
+            isValid = validateField("billingAddress", "billingAddressError") && isValid;
+            isValid = validateField("billingCity", "billingCityError") && isValid;
+            isValid = validateField("billingState", "billingStateError") && isValid;
+            isValid = validateField("billingZip", "billingZipError") && isValid;
+
+            isValid = validateField("cardNumber", "cardNumberError") && isValid;
+            isValid = validateField("cardExpiry", "cardExpiryError") && isValid;
+            isValid = validateField("cardCVC", "cardCVCError") && isValid;
+
+            if (isValid) {
+                // Mock payment processing and order submission
+                alert("Order placed successfully! (Mock payment gateway)");
+                // You would typically redirect to a confirmation page or clear the cart here.
+                window.location.href = "index.html"; // Redirect to home page
+            }
+
+            return false; // Prevent form submission if validation fails
+        }
+
+        /**
+         * Validates a single form field and displays an error message if necessary.
+         * @param {string} fieldId - The ID of the input field.
+         * @param {string} errorId - The ID of the error message element.
+         * @returns {boolean} True if the field is valid, false otherwise.
+         */
+        function validateField(fieldId, errorId) {
+            const field = document.getElementById(fieldId);
+            const errorElement = document.getElementById(errorId);
+
+            if (!field.value.trim()) {
+                errorElement.textContent = "This field is required.";
+                return false;
+            } else {
+                errorElement.textContent = ""; // Clear any previous error message
+                return true;
+            }
+        }
+
+        // Simulate fetching order summary from cart (replace with actual cart data)
+        document.addEventListener("DOMContentLoaded", function () {
+            const orderSummaryElement = document.getElementById("orderSummary");
+            if (orderSummaryElement) {
+                // In a real application, you'd retrieve the cart data from localStorage or a server.
+                // For this example, we'll use hardcoded values.
+                const subtotal = 199.99;
+                const shipping = 9.99;
+                const total = subtotal + shipping;
+
+                orderSummaryElement.innerHTML = `
+                    <p>Subtotal: $${subtotal.toFixed(2)}</p>
+                    <p>Shipping: $${shipping.toFixed(2)}</p>
+                    <p class="font-semibold">Total: $${total.toFixed(2)}</p>
+                `;
+            }
+        });
+    </script>
+</body>
+
+</html>
