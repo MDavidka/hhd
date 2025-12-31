@@ -1,0 +1,113 @@
+/**
+ * Formats a number into a currency string (e.g., $1,234.56).
+ * @param {number} amount - The amount to format.
+ * @param {string} [currency='USD'] - The currency symbol.
+ * @returns {string} The formatted currency string.
+ */
+function formatCurrency(amount, currency = 'USD') {
+    return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: currency,
+    }).format(amount);
+}
+
+/**
+ * Validates an email address format.
+ * @param {string} email - The email address to validate.
+ * @returns {boolean} True if the email format is valid, false otherwise.
+ */
+function isValidEmail(email) {
+    // A simple regex for email validation. For more robust validation, consider a dedicated library.
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+}
+
+/**
+ * Saves data to local storage.
+ * @param {string} key - The key to store the data under.
+ * @param {*} value - The data to store.
+ */
+function saveToLocalStorage(key, value) {
+    try {
+        localStorage.setItem(key, JSON.stringify(value));
+    } catch (error) {
+        console.error("Error saving to local storage:", error);
+    }
+}
+
+/**
+ * Retrieves data from local storage.
+ * @param {string} key - The key of the data to retrieve.
+ * @returns {*} The retrieved data, or null if not found or an error occurs.
+ */
+function getFromLocalStorage(key) {
+    try {
+        const data = localStorage.getItem(key);
+        return data ? JSON.parse(data) : null;
+    } catch (error) {
+        console.error("Error retrieving from local storage:", error);
+        return null;
+    }
+}
+
+/**
+ * Removes data from local storage.
+ * @param {string} key - The key of the data to remove.
+ */
+function removeFromLocalStorage(key) {
+    try {
+        localStorage.removeItem(key);
+    } catch (error) {
+        console.error("Error removing from local storage:", error);
+    }
+}
+
+/**
+ * Generates a unique ID.
+ * @returns {string} A unique identifier.
+ */
+function generateUniqueId() {
+    return '_' + Math.random().toString(36).substr(2, 9);
+}
+
+/**
+ * Debounces a function to limit how often it's called.
+ * @param {function} func - The function to debounce.
+ * @param {number} delay - The delay in milliseconds.
+ * @returns {function} The debounced function.
+ */
+function debounce(func, delay) {
+    let timeoutId;
+    return function(...args) {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => {
+            func.apply(this, args);
+        }, delay);
+    };
+}
+
+/**
+ * Throttles a function to limit how often it's called within a time frame.
+ * @param {function} func - The function to throttle.
+ * @param {number} limit - The time limit in milliseconds.
+ * @returns {function} The throttled function.
+ */
+function throttle(func, limit) {
+    let lastFunc;
+    let lastRan;
+    return function(...args) {
+        const context = this;
+        if (!lastRan) {
+            func.apply(context, args);
+            lastRan = Date.now();
+        } else {
+            clearTimeout(lastFunc);
+            lastFunc = setTimeout(function() {
+                if ((Date.now() - lastRan) >= limit) {
+                    func.apply(context, args);
+                    lastRan = Date.now();
+                }
+            }, limit - (Date.now() - lastRan));
+        }
+    };
+}
