@@ -1,0 +1,252 @@
+```ts
+/**
+ * @file Reusable UI components such as buttons, image carousels, and product cards.
+ * Ensures consistency across the site.
+ */
+
+/**
+ * Primary Button Component
+ *
+ * @param {Object} props - Button properties.
+ * @param {string} props.text - Button text.
+ * @param {Function} props.onClick - Click handler function.
+ * @param {boolean} [props.disabled=false] - Whether the button is disabled.
+ * @param {boolean} [props.loading=false] - Whether the button is in a loading state.
+ * @returns {HTMLButtonElement} - The button element.
+ */
+export function PrimaryButton(props: {
+  text: string;
+  onClick: () => void;
+  disabled?: boolean;
+  loading?: boolean;
+}): HTMLButtonElement {
+  const button = document.createElement('button');
+  button.textContent = props.text;
+  button.className = `
+    bg-blue-500 
+    hover:bg-blue-700 
+    text-white 
+    font-bold 
+    py-2 
+    px-4 
+    rounded 
+    focus:outline-none 
+    focus:shadow-outline
+    disabled:opacity-50 
+    disabled:cursor-not-allowed
+  `;
+  button.addEventListener('click', props.onClick);
+  button.disabled = props.disabled || false;
+
+  if (props.loading) {
+    button.textContent = 'Loading...';
+    button.disabled = true;
+  }
+
+  return button;
+}
+
+/**
+ * Secondary Button Component
+ *
+ * @param {Object} props - Button properties.
+ * @param {string} props.text - Button text.
+ * @param {Function} props.onClick - Click handler function.
+ * @param {boolean} [props.disabled=false] - Whether the button is disabled.
+ * @returns {HTMLButtonElement} - The button element.
+ */
+export function SecondaryButton(props: {
+  text: string;
+  onClick: () => void;
+  disabled?: boolean;
+}): HTMLButtonElement {
+  const button = document.createElement('button');
+  button.textContent = props.text;
+  button.className = `
+    bg-gray-300 
+    hover:bg-gray-400 
+    text-gray-800 
+    font-bold 
+    py-2 
+    px-4 
+    rounded 
+    focus:outline-none 
+    focus:shadow-outline
+    disabled:opacity-50 
+    disabled:cursor-not-allowed
+  `;
+  button.addEventListener('click', props.onClick);
+  button.disabled = props.disabled || false;
+  return button;
+}
+
+/**
+ * Outline Button Component
+ *
+ * @param {Object} props - Button properties.
+ * @param {string} props.text - Button text.
+ * @param {Function} props.onClick - Click handler function.
+ * @param {boolean} [props.disabled=false] - Whether the button is disabled.
+ * @returns {HTMLButtonElement} - The button element.
+ */
+export function OutlineButton(props: {
+  text: string;
+  onClick: () => void;
+  disabled?: boolean;
+}): HTMLButtonElement {
+  const button = document.createElement('button');
+  button.textContent = props.text;
+  button.className = `
+    bg-transparent 
+    hover:bg-gray-200
+    text-blue-700 
+    font-semibold 
+    py-2 
+    px-4 
+    border 
+    border-blue-500 
+    hover:border-transparent 
+    rounded
+    focus:outline-none 
+    focus:shadow-outline
+    disabled:opacity-50 
+    disabled:cursor-not-allowed
+  `;
+  button.addEventListener('click', props.onClick);
+  button.disabled = props.disabled || false;
+  return button;
+}
+
+
+/**
+ * Danger Button Component
+ *
+ * @param {Object} props - Button properties.
+ * @param {string} props.text - Button text.
+ * @param {Function} props.onClick - Click handler function.
+ * @param {boolean} [props.disabled=false] - Whether the button is disabled.
+ * @returns {HTMLButtonElement} - The button element.
+ */
+export function DangerButton(props: {
+  text: string;
+  onClick: () => void;
+  disabled?: boolean;
+}): HTMLButtonElement {
+  const button = document.createElement('button');
+  button.textContent = props.text;
+  button.className = `
+    bg-red-500 
+    hover:bg-red-700 
+    text-white 
+    font-bold 
+    py-2 
+    px-4 
+    rounded 
+    focus:outline-none 
+    focus:shadow-outline
+    disabled:opacity-50 
+    disabled:cursor-not-allowed
+  `;
+  button.addEventListener('click', props.onClick);
+  button.disabled = props.disabled || false;
+  return button;
+}
+
+
+/**
+ * Product Card Component
+ *
+ * @param {Object} props - Product card properties.
+ * @param {string} props.imageUrl - URL of the product image.
+ * @param {string} props.title - Product title.
+ * @param {string} props.description - Product description.
+ * @param {number} props.price - Product price.
+ * @param {Function} props.onClick - Click handler function for the card.
+ * @returns {HTMLDivElement} - The product card element.
+ */
+export function ProductCard(props: {
+  imageUrl: string;
+  title: string;
+  description: string;
+  price: number;
+  onClick: () => void;
+}): HTMLDivElement {
+  const card = document.createElement('div');
+  card.className = `
+    max-w-sm 
+    rounded 
+    overflow-hidden 
+    shadow-lg
+    cursor-pointer
+    hover:shadow-xl
+    transition-shadow
+  `;
+  card.addEventListener('click', props.onClick);
+
+  const image = document.createElement('img');
+  image.className = 'w-full';
+  image.src = props.imageUrl;
+  image.alt = props.title;
+  card.appendChild(image);
+
+  const details = document.createElement('div');
+  details.className = 'px-6 py-4';
+
+  const title = document.createElement('div');
+  title.className = 'font-bold text-xl mb-2';
+  title.textContent = props.title;
+  details.appendChild(title);
+
+  const description = document.createElement('p');
+  description.className = 'text-gray-700 text-base';
+  description.textContent = props.description;
+  details.appendChild(description);
+
+  const price = document.createElement('div');
+  price.className = 'font-bold text-xl mt-2';
+  price.textContent = `$${props.price.toFixed(2)}`;
+  details.appendChild(price);
+
+  card.appendChild(details);
+
+  return card;
+}
+
+/**
+ * Image Carousel Component
+ *
+ * @param {Object} props - Carousel properties.
+ * @param {string[]} props.imageUrls - Array of image URLs.
+ * @returns {HTMLDivElement} - The carousel element.
+ */
+export function ImageCarousel(props: { imageUrls: string[] }): HTMLDivElement {
+  const carousel = document.createElement('div');
+  carousel.className = 'carousel w-full';
+
+  props.imageUrls.forEach((imageUrl, index) => {
+    const carouselItem = document.createElement('div');
+    carouselItem.id = `slide${index + 1}`;
+    carouselItem.className = 'carousel-item relative w-full';
+
+    const image = document.createElement('img');
+    image.src = imageUrl;
+    image.className = 'w-full';
+    image.alt = `Slide ${index + 1}`;
+    carouselItem.appendChild(image);
+
+    const prevSlide = index === 0 ? props.imageUrls.length : index;
+    const nextSlide = index === props.imageUrls.length - 1 ? 1 : index + 2;
+
+    carouselItem.innerHTML += `
+      <div class="absolute flex justify-between transform -translate-y-1/2 left-5 right-5 top-1/2">
+        <a href="#slide${prevSlide}" class="btn btn-circle">❮</a>
+        <a href="#slide${nextSlide}" class="btn btn-circle">❯</a>
+      </div>
+    `;
+
+    carousel.appendChild(carouselItem);
+  });
+
+  return carousel;
+}
+```
