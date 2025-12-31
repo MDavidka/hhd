@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - Phone Seller Store</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+        integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        /* Example custom styles - consider moving to style.css */
+        .form-input:focus {
+            border-color: #63b3ed;
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5);
+            outline: none;
+        }
+
+        /* Add more custom styles as needed */
+    </style>
+</head>
+
+<body class="bg-gray-100 font-sans">
+    <!-- Header -->
+    <header class="bg-white shadow-md">
+        <nav class="container mx-auto py-4 px-6 flex items-center justify-between">
+            <a href="index.html" class="text-2xl font-semibold text-gray-800">PhoneStore</a>
+            <div class="space-x-4">
+                <a href="index.html" class="text-gray-600 hover:text-blue-500">Home</a>
+                <a href="product.html" class="text-gray-600 hover:text-blue-500">Products</a>
+                <a href="cart.html" class="text-gray-600 hover:text-blue-500">Cart</a>
+                <a href="contact.html" class="text-gray-600 hover:text-blue-500">Contact</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto mt-8 p-6 bg-white shadow-md rounded-md">
+        <h1 class="text-3xl font-semibold mb-6 text-gray-800">Contact Us</h1>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Contact Form -->
+            <div>
+                <form id="contactForm" class="space-y-4">
+                    <div>
+                        <label for="name" class="block text-gray-700 text-sm font-bold mb-2">Name:</label>
+                        <input type="text" id="name" name="name"
+                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:ring focus:shadow-outline form-input"
+                            placeholder="Your Name">
+                    </div>
+                    <div>
+                        <label for="email" class="block text-gray-700 text-sm font-bold mb-2">Email:</label>
+                        <input type="email" id="email" name="email"
+                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:ring focus:shadow-outline form-input"
+                            placeholder="Your Email">
+                    </div>
+                    <div>
+                        <label for="message" class="block text-gray-700 text-sm font-bold mb-2">Message:</label>
+                        <textarea id="message" name="message" rows="4"
+                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:ring focus:shadow-outline form-input"
+                            placeholder="Your Message"></textarea>
+                    </div>
+                    <div>
+                        <button type="submit"
+                            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                            Send Message
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Contact Information and Map -->
+            <div>
+                <h2 class="text-2xl font-semibold mb-4 text-gray-800">Our Information</h2>
+                <ul class="space-y-2">
+                    <li class="flex items-center">
+                        <i class="fas fa-envelope mr-2 text-gray-500"></i>
+                        <a href="mailto:info@phonestore.com" class="text-blue-500 hover:underline">info@phonestore.com</a>
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fas fa-phone mr-2 text-gray-500"></i>
+                        <a href="tel:+15551234567" class="text-blue-500 hover:underline">+1 (555) 123-4567</a>
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fas fa-map-marker-alt mr-2 text-gray-500"></i>
+                        <span>123 Main Street, Anytown, USA</span>
+                    </li>
+                </ul>
+
+                <div class="mt-4">
+                    <img src="https://via.placeholder.com/400x300/cccccc/ffffff?text=Store+Location"
+                        alt="Store Location" class="rounded-md">
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-4 mt-8">
+        <div class="container mx-auto text-center">
+            <p>&copy; 2024 PhoneStore. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // @ts-check
+        document.addEventListener('DOMContentLoaded', () => {
+            const contactForm = document.getElementById('contactForm');
+
+            if (contactForm) {
+                contactForm.addEventListener('submit', function (event) {
+                    event.preventDefault();
+
+                    const name = document.getElementById('name').value;
+                    const email = document.getElementById('email').value;
+                    const message = document.getElementById('message').value;
+
+                    if (!name || !email || !message) {
+                        alert('Please fill in all fields.');
+                        return;
+                    }
+
+                    // Basic email validation
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (!emailRegex.test(email)) {
+                        alert('Please enter a valid email address.');
+                        return;
+                    }
+
+                    // Here you would typically send the form data to a server
+                    // For this example, we'll just simulate a successful submission
+                    alert('Message sent successfully!');
+                    contactForm.reset();
+                });
+            } else {
+                console.error('Contact form not found!');
+            }
+        });
+    </script>
+</body>
+
+</html>
