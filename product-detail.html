@@ -1,0 +1,610 @@
+[1<product-detail.html>]
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Detail - PhoneBrand</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Custom styles to ensure Tailwind works as expected and for any specific overrides */
+        body {
+            font-family: 'Inter', sans-serif; /* Assuming Inter is used, or replace with your chosen font */
+            background-color: #f9fafb; /* Soft neutral background */
+            color: #1f2937; /* Dark gray text */
+        }
+        .main-content {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+        .product-image-gallery img {
+            transition: transform 0.3s ease-in-out;
+        }
+        .product-image-gallery img:hover {
+            transform: scale(1.05);
+        }
+        .sticky-header {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background-color: rgba(255, 255, 255, 0.9); /* Slightly transparent background */
+            backdrop-filter: blur(5px);
+        }
+        .btn-primary {
+            background-color: #3b82f6; /* Tailwind's blue-500 */
+            color: white;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.375rem;
+            transition: background-color 0.2s ease, transform 0.2s ease;
+        }
+        .btn-primary:hover {
+            background-color: #2563eb; /* Tailwind's blue-600 */
+            transform: translateY(-2px);
+        }
+        .btn-secondary {
+            background-color: transparent;
+            color: #3b82f6;
+            border: 1px solid #3b82f6;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.375rem;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+        .btn-secondary:hover {
+            background-color: #eff6ff; /* Tailwind's blue-50 */
+            color: #2563eb;
+        }
+        .card {
+            background-color: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            padding: 1.5rem;
+        }
+        .specs-list li {
+            margin-bottom: 0.75rem;
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid #e5e7eb; /* Light gray border */
+            padding-bottom: 0.75rem;
+        }
+        .specs-list li:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        .review-card {
+            background-color: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        .rating-stars {
+            color: #f59e0b; /* Tailwind's amber-500 */
+        }
+        .input-field {
+            border: 1px solid #d1d5db; /* Tailwind's gray-300 */
+            border-radius: 0.375rem;
+            padding: 0.75rem 1rem;
+            width: 100%;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .input-field:focus {
+            border-color: #3b82f6; /* Tailwind's blue-500 */
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3); /* Soft blue glow */
+            outline: none;
+        }
+        .label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #111827; /* Darker gray for labels */
+        }
+        .quantity-selector {
+            display: flex;
+            align-items: center;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+        }
+        .quantity-selector button {
+            padding: 0.5rem 1rem;
+            font-size: 1.125rem;
+            color: #3b82f6;
+            transition: background-color 0.2s ease;
+        }
+        .quantity-selector button:hover {
+            background-color: #eff6ff;
+        }
+        .quantity-selector span {
+            padding: 0.5rem 1rem;
+            font-weight: 500;
+            min-width: 40px;
+            text-align: center;
+        }
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            border-radius: 0.5rem;
+        }
+        .skeleton-text {
+            background-color: #e5e7eb;
+            height: 1rem;
+            border-radius: 0.25rem;
+            animation: pulse 1.5s infinite ease-in-out;
+        }
+        .skeleton-image {
+            background-color: #e5e7eb;
+            border-radius: 0.5rem;
+            animation: pulse 1.5s infinite ease-in-out;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 0.9; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans antialiased">
+
+    <!-- Header -->
+    <header class="sticky-header shadow-sm">
+        <nav class="container mx-auto px-4 py-4 flex items-center justify-between">
+            <div class="flex items-center">
+                <a href="index.html" class="text-2xl font-bold text-blue-600">PhoneBrand</a>
+            </div>
+            <div class="hidden md:flex space-x-6">
+                <a href="index.html" class="text-gray-700 hover:text-blue-600 transition duration-200">Home</a>
+                <a href="product-list.html" class="text-gray-700 hover:text-blue-600 transition duration-200">Products</a>
+                <a href="#" class="text-gray-700 hover:text-blue-600 transition duration-200">About</a>
+                <a href="#" class="text-gray-700 hover:text-blue-600 transition duration-200">Contact</a>
+            </div>
+            <div class="flex items-center space-x-4">
+                <button class="text-gray-700 hover:text-blue-600 transition duration-200">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                </button>
+                <a href="cart.html" class="relative text-gray-700 hover:text-blue-600 transition duration-200">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.27.27-.407.615-.407.995v2.097c0 .498.36.93.857.995l10.143 1.353c.12.016.24.02.36.02h1.042c.763 0 1.393-.576 1.503-1.376L21 5h-9.999"></path></svg>
+                    <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center" id="cart-count">0</span>
+                </a>
+                <!-- Mobile Menu Button -->
+                <button class="md:hidden ml-4 text-gray-700 hover:text-blue-600 focus:outline-none">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                </button>
+            </div>
+        </nav>
+        <!-- Mobile Menu (hidden by default) -->
+        <div class="md:hidden bg-white pb-4 px-4 hidden">
+            <a href="index.html" class="block py-2 text-gray-700 hover:text-blue-600">Home</a>
+            <a href="product-list.html" class="block py-2 text-gray-700 hover:text-blue-600">Products</a>
+            <a href="#" class="block py-2 text-gray-700 hover:text-blue-600">About</a>
+            <a href="#" class="block py-2 text-gray-700 hover:text-blue-600">Contact</a>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Product Image Gallery -->
+            <div class="card p-4">
+                <div class="relative aspect-square overflow-hidden rounded-lg mb-4">
+                    <img id="main-product-image" src="" alt="Main Product Image" class="w-full h-full object-cover rounded-lg">
+                    <div id="loading-spinner" class="loading-overlay">
+                        <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500 border-solid"></div>
+                    </div>
+                </div>
+                <div id="thumbnail-gallery" class="flex space-x-3 overflow-x-auto pb-2">
+                    <!-- Thumbnails will be loaded here by JS -->
+                </div>
+            </div>
+
+            <!-- Product Details -->
+            <div class="lg:sticky lg:top-24">
+                <div class="card p-6">
+                    <h1 id="product-name" class="text-3xl font-bold text-gray-900 mb-3"></h1>
+                    <div class="flex items-center mb-4">
+                        <div id="product-rating" class="flex items-center rating-stars mr-3">
+                            <!-- Stars will be generated by JS -->
+                        </div>
+                        <span id="product-reviews-count" class="text-sm text-gray-600"></span>
+                    </div>
+                    <p id="product-description" class="text-gray-600 mb-6 leading-relaxed"></p>
+
+                    <div class="mb-6">
+                        <span class="text-3xl font-extrabold text-gray-900 price" id="product-price"></span>
+                        <span class="text-sm text-gray-500 line-through ml-2" id="product-original-price"></span>
+                    </div>
+
+                    <div class="mb-6">
+                        <label for="quantity" class="label">Quantity:</label>
+                        <div class="quantity-selector">
+                            <button id="decrease-quantity" class="px-4 py-2">-</button>
+                            <span id="quantity-value">1</span>
+                            <button id="increase-quantity" class="px-4 py-2">+</button>
+                        </div>
+                    </div>
+
+                    <button id="add-to-cart-btn" class="btn-primary w-full mb-4">Add to Cart</button>
+                    <button id="buy-now-btn" class="btn-secondary w-full">Buy Now</button>
+
+                    <div class="mt-8 pt-6 border-t border-gray-200">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Specifications</h3>
+                        <ul id="product-specs" class="specs-list">
+                            <!-- Specs will be loaded here by JS -->
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Customer Reviews Section -->
+        <section class="mt-12">
+            <h2 class="text-3xl font-bold text-gray-900 mb-6 text-center">Customer Reviews</h2>
+            <div id="reviews-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Reviews will be loaded here by JS -->
+                <div class="review-card skeleton-card">
+                    <div class="skeleton-text w-3/4 mb-3 h-5"></div>
+                    <div class="skeleton-text w-1/2 mb-3 h-5"></div>
+                    <div class="skeleton-text w-full mb-3 h-20"></div>
+                    <div class="flex items-center">
+                        <div class="skeleton-text w-24 h-4 mr-2"></div>
+                        <div class="skeleton-text w-16 h-4"></div>
+                    </div>
+                </div>
+                 <div class="review-card skeleton-card">
+                    <div class="skeleton-text w-3/4 mb-3 h-5"></div>
+                    <div class="skeleton-text w-1/2 mb-3 h-5"></div>
+                    <div class="skeleton-text w-full mb-3 h-20"></div>
+                    <div class="flex items-center">
+                        <div class="skeleton-text w-24 h-4 mr-2"></div>
+                        <div class="skeleton-text w-16 h-4"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center mt-8">
+                <button class="btn-secondary">Load More Reviews</button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-gray-300 py-12 mt-16">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-white font-bold text-xl mb-4">PhoneBrand</h3>
+                    <p class="text-gray-400">Your one-stop shop for the latest and greatest smartphones. Experience innovation in your hands.</p>
+                </div>
+                <div>
+                    <h3 class="text-white font-bold text-lg mb-4">Quick Links</h3>
+                    <ul>
+                        <li><a href="#" class="hover:text-white transition duration-200">Home</a></li>
+                        <li><a href="product-list.html" class="hover:text-white transition duration-200">Products</a></li>
+                        <li><a href="#" class="hover:text-white transition duration-200">About Us</a></li>
+                        <li><a href="#" class="hover:text-white transition duration-200">Contact Us</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-white font-bold text-lg mb-4">Support</h3>
+                    <ul>
+                        <li><a href="#" class="hover:text-white transition duration-200">FAQ</a></li>
+                        <li><a href="#" class="hover:text-white transition duration-200">Shipping Policy</a></li>
+                        <li><a href="#" class="hover:text-white transition duration-200">Return Policy</a></li>
+                        <li><a href="#" class="hover:text-white transition duration-200">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-white font-bold text-lg mb-4">Follow Us</h3>
+                    <div class="flex space-x-4">
+                        <a href="#" class="hover:text-white transition duration-200"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M23.953 4.57a10.12 10.12 0 00-2.559-2.559C20.024 1.217 19.057 1.2 18.123 1.2H5.876C4.942 1.2 3.974 1.217 3.057 1.416a10.12 10.12 0 00-2.559 2.559c-.2 0.841-.219 1.81-.219 2.743v12.246c0 .933.019 1.899.219 2.742a10.12 10.12 0 002.559 2.559c.84.2 1.809.219 2.742.219H18.123c.933 0 1.899-.019 2.742-.219a10.12 10.12 0 002.559-2.559c.2-.84.219-1.81.219-2.742V7.313c0-.933-.019-1.899-.219-2.742zM15.37 12.313h-3.121v7.452h-3.642V12.313H8.034V10.42h2.172V8.767c0-1.172.225-2.313 0.678-3.295.453-.981 1.238-1.707 2.218-2.184.98-.477 2.03-.716 3.145-.716.771 0 1.49.071 2.14.219v3.476h-2.045c-.521 0-1.03.116-1.44.347-.41.23-.746.567-.99.994-.244.437-.374.91-.374 1.425v1.944h3.339v2.094z"></path></svg></a>
+                        <a href="#" class="hover:text-white transition duration-200"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M23.954 4.57a10.12 10.12 0 00-2.559-2.559c-.201-.841-.809-1.585-1.585-2.022a10.12 10.12 0 00-2.743-.219c-.933 0-1.899-.019-2.742-.019H7.313c-.933 0-1.899.019-2.742.019a10.12 10.12 0 00-2.743.219c-.776.437-1.384 1.181-1.585 2.022-.2 0.841-.219 1.81-.219 2.743v12.246c0 .933.019 1.899.219 2.742a10.12 10.12 0 002.559 2.559c.84.2 1.809.219 2.742.219H16.687c.933 0 1.899-.019 2.742-.219a10.12 10.12 0 002.559-2.559c.2-.84.219-1.81.219-2.742V7.313c0-.933-.019-1.899-.219-2.742zM10.781 19.58V10.04h3.042l.457 3.042h-.032c-.23.954-.933 1.635-1.878 1.635-.841 0-1.482-.277-2.033-.832-.552-.555-.828-1.284-.828-2.188V7.703h3.642v1.944c0 .457.1.9.303 1.316.205.415.53.74.976.976.445.23.98.347 1.508.347.638 0 1.216-.137 1.715-.412.498-.275.878-.67.1.051.415.185.841.277 1.277.277.477.64.841 1.093.1.137.23.252.373.347.477.347 1.008.521 1.598.521.59 0 1.118-.185 1.598-.555.48-.37.841-.841 1.093-1.415.252-.573.378-.1.378-1.635v-1.944h3.642v9.958c0 .933-.019 1.899-.219 2.742a10.12 10.12 0 00-2.559 2.559c-.776.437-1.745.656-2.742.656H10.781z"></path></svg></a>
+                        <a href="#" class="hover:text-white transition duration-200"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M23.954 4.57a10.12 10.12 0 00-2.559-2.559c-.201-.841-.809-1.585-1.585-2.022a10.12 10.12 0 00-2.743-.219c-.933 0-1.899-.019-2.742-.019H7.313c-.933 0-1.899.019-2.742.019a10.12 10.12 0 00-2.743.219c-.776.437-1.384 1.181-1.585 2.022-.2 0.841-.219 1.81-.219 2.743v12.246c0 .933.019 1.899.219 2.742a10.12 10.12 0 002.559 2.559c.84.2 1.809.219 2.742.219H16.687c.933 0 1.899-.019 2.742-.219a10.12 10.12 0 002.559-2.559c.2-.84.219-1.81.219-2.742V7.313c0-.933-.019-1.899-.219-2.742zM10.781 19.58V10.04h3.042l.457 3.042h-.032c-.23.954-.933 1.635-1.878 1.635-.841 0-1.482-.277-2.033-.832-.552-.555-.828-1.284-.828-2.188V7.703h3.642v1.944c0 .457.1.9.303 1.316.205.415.53.74.976.976.445.23.98.347 1.508.347.638 0 1.216-.137 1.715-.412.498-.275.878-.67.1.051.415.185.841.277 1.277.277.477.64.841 1.093.1.137.23.252.373.347.477.347 1.008.521 1.598.521.59 0 1.118-.185 1.598-.555.48-.37.841-.841 1.093-1.415.252-.573.378-.1.378-1.635v-1.944h3.642v9.958c0 .933-.019 1.899-.219 2.742a10.12 10.12 0 00-2.559 2.559c-.776.437-1.745.656-2.742.656H10.781z"></path></svg></a>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-8 pt-8 border-t border-gray-700 text-center text-gray-400">
+                &copy; 2023 PhoneBrand. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        // --- Product Detail Page Specific Logic ---
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const productId = new URLSearchParams(window.location.search).get('id');
+            const mainImage = document.getElementById('main-product-image');
+            const thumbnailGallery = document.getElementById('thumbnail-gallery');
+            const productName = document.getElementById('product-name');
+            const productRating = document.getElementById('product-rating');
+            const productReviewsCount = document.getElementById('product-reviews-count');
+            const productDescription = document.getElementById('product-description');
+            const productPrice = document.getElementById('product-price');
+            const productOriginalPrice = document.getElementById('product-original-price');
+            const productSpecs = document.getElementById('product-specs');
+            const reviewsContainer = document.getElementById('reviews-container');
+            const addToCartBtn = document.getElementById('add-to-cart-btn');
+            const buyNowBtn = document.getElementById('buy-now-btn');
+            const quantityValue = document.getElementById('quantity-value');
+            const increaseQuantityBtn = document.getElementById('increase-quantity');
+            const decreaseQuantityBtn = document.getElementById('decrease-quantity');
+            const cartCountSpan = document.getElementById('cart-count');
+            const loadingSpinner = document.getElementById('loading-spinner');
+
+
+            // Mock product data (replace with actual API call in production)
+            const products = [
+                {
+                    id: 'iphone-15',
+                    name: 'iPhone 15 Pro',
+                    images: [
+                        'https://via.placeholder.com/600/92c952',
+                        'https://via.placeholder.com/600/771796',
+                        'https://via.placeholder.com/600/24f355',
+                        'https://via.placeholder.com/600/d32776'
+                    ],
+                    description: 'The iPhone 15 Pro features a new Action button, a more advanced camera system, and the A17 Bionic chip for pro-level performance. Experience the future of mobile technology.',
+                    price: 1199.00,
+                    originalPrice: 1299.00,
+                    rating: 4.8,
+                    reviews: 150,
+                    specs: {
+                        'Display': '6.1-inch Super Retina XDR',
+                        'Chip': 'A17 Bionic',
+                        'Pro Camera System': '48MP Main, Ultra Wide, Telephoto',
+                        'Storage': '128GB, 256GB, 512GB, 1TB',
+                        'Battery Life': 'Up to 23 hours video playback',
+                        'Water Resistance': 'IP68'
+                    },
+                    reviewsData: [
+                        { user: 'Alice', rating: 5, comment: 'Absolutely love the new Action button! Camera is incredible.' },
+                        { user: 'Bob', rating: 4, comment: 'Great phone, battery life could be slightly better.' },
+                        { user: 'Charlie', rating: 5, comment: 'The display is stunning and performance is top-notch.' },
+                        { user: 'David', rating: 4, comment: 'A solid upgrade from my previous iPhone.' }
+                    ]
+                },
+                {
+                    id: 'galaxy-s24',
+                    name: 'Samsung Galaxy S24 Ultra',
+                    images: [
+                        'https://via.placeholder.com/600/a7704d',
+                        'https://via.placeholder.com/600/56a8c2',
+                        'https://via.placeholder.com/600/b0f7cc',
+                        'https://via.placeholder.com/600/54176f'
+                    ],
+                    description: 'Unleash your creativity with the Galaxy S24 Ultra. Featuring a built-in S Pen, a revolutionary 200MP camera, and AI-powered features for ultimate productivity and entertainment.',
+                    price: 1299.99,
+                    originalPrice: null,
+                    rating: 4.7,
+                    reviews: 210,
+                    specs: {
+                        'Display': '6.8-inch Dynamic AMOLED 2X',
+                        'Processor': 'Snapdragon 8 Gen 3',
+                        'Camera': '200MP Wide, 12MP Ultra Wide, 10MP Telephoto (3x), 10MP Telephoto (10x)',
+                        'Storage': '256GB, 512GB, 1TB',
+                        'Battery': '5000mAh',
+                        'Features': 'S Pen, AI Features'
+                    },
+                     reviewsData: [
+                        { user: 'Eve', rating: 5, comment: 'The camera zoom is mind-blowing! The S Pen is a game-changer.' },
+                        { user: 'Frank', rating: 4, comment: 'Performance is amazing, runs all apps smoothly.' },
+                        { user: 'Grace', rating: 5, comment: 'Best Android phone I\'ve ever owned. The screen is gorgeous.' },
+                        { user: 'Heidi', rating: 3, comment: 'A bit expensive, but you get what you pay for.' }
+                    ]
+                },
+                 {
+                    id: 'pixel-8',
+                    name: 'Google Pixel 8',
+                    images: [
+                        'https://via.placeholder.com/600/f66b97',
+                        'https://via.placeholder.com/600/56a8c2',
+                        'https://via.placeholder.com/600/b0f7cc',
+                        'https://via.placeholder.com/600/54176f'
+                    ],
+                    description: 'Capture stunning photos with the Google Pixel 8. Powered by Google Tensor G3 and advanced AI, it offers incredible camera features and a smooth, intuitive experience.',
+                    price: 699.00,
+                    originalPrice: 799.00,
+                    rating: 4.6,
+                    reviews: 180,
+                    specs: {
+                        'Display': '6.2-inch Actua display',
+                        'Processor': 'Google Tensor G3',
+                        'Camera': '50MP Main, 12MP Ultrawide',
+                        'Storage': '128GB, 256GB',
+                        'Battery Life': 'All-day battery',
+                        'OS': 'Android 14'
+                    },
+                    reviewsData: [
+                        { user: 'Ivy', rating: 5, comment: 'The AI camera features are fantastic! Magic Eraser is so useful.' },
+                        { user: 'Jack', rating: 4, comment: 'Smooth performance and clean Android experience.' },
+                        { user: 'Kate', rating: 4, comment: 'Good value for the price, especially with the camera quality.' }
+                    ]
+                }
+            ];
+
+            // Function to find product by ID
+            const getProductById = (id) => products.find(p => p.id === id);
+
+            // Function to display product details
+            const displayProductDetails = (product) => {
+                if (!product) {
+                    productName.textContent = 'Product Not Found';
+                    productDescription.textContent = 'The requested product could not be found.';
+                    loadingSpinner.style.display = 'none';
+                    return;
+                }
+
+                // Image Gallery
+                mainImage.src = product.images[0];
+                mainImage.alt = product.name;
+                thumbnailGallery.innerHTML = ''; // Clear existing thumbnails
+                product.images.forEach((imgSrc, index) => {
+                    const thumb = document.createElement('img');
+                    thumb.src = imgSrc;
+                    thumb.alt = `${product.name} Thumbnail`;
+                    thumb.classList.add('w-20', 'h-20', 'object-cover', 'rounded-md', 'cursor-pointer', 'border-2', 'border-transparent', 'hover:border-blue-500');
+                    if (index === 0) {
+                        thumb.classList.add('border-blue-500'); // Highlight active thumbnail
+                    }
+                    thumb.addEventListener('click', () => {
+                        mainImage.src = imgSrc;
+                        // Update active thumbnail class
+                        document.querySelectorAll('#thumbnail-gallery img').forEach(t => t.classList.remove('border-blue-500'));
+                        thumb.classList.add('border-blue-500');
+                    });
+                    thumbnailGallery.appendChild(thumb);
+                });
+
+                // Basic Info
+                productName.textContent = product.name;
+                productDescription.textContent = product.description;
+
+                // Rating
+                productRating.innerHTML = ''; // Clear existing stars
+                for (let i = 0; i < 5; i++) {
+                    const star = document.createElement('span');
+                    star.innerHTML = i < Math.floor(product.rating) ? '★' : (i < product.rating ? '☆' : ''); // Half star logic could be more complex
+                    star.classList.add('text-xl');
+                    if (i < product.rating) {
+                        star.classList.add('text-yellow-400');
+                    } else {
+                        star.classList.add('text-gray-300');
+                    }
+                    productRating.appendChild(star);
+                }
+                productReviewsCount.textContent = `(${product.reviews} reviews)`;
+
+                // Price
+                productPrice.textContent = `$${product.price.toFixed(2)}`;
+                if (product.originalPrice) {
+                    productOriginalPrice.textContent = `$${product.originalPrice.toFixed(2)}`;
+                    productOriginalPrice.classList.remove('hidden');
+                } else {
+                    productOriginalPrice.classList.add('hidden');
+                }
+
+                // Specifications
+                productSpecs.innerHTML = ''; // Clear existing specs
+                for (const [key, value] of Object.entries(product.specs)) {
+                    const li = document.createElement('li');
+                    li.innerHTML = `
+                        <span class="font-medium text-gray-700">${key}:</span>
+                        <span class="text-gray-600">${value}</span>
+                    `;
+                    productSpecs.appendChild(li);
+                }
+
+                // Reviews
+                renderReviews(product.reviewsData);
+
+                // Hide spinner once content is loaded
+                loadingSpinner.style.display = 'none';
+            };
+
+            // Function to render reviews
+            const renderReviews = (reviews) => {
+                reviewsContainer.innerHTML = ''; // Clear existing reviews
+                if (!reviews || reviews.length === 0) {
+                    reviewsContainer.innerHTML = '<p class="text-center text-gray-500 col-span-full">No reviews yet. Be the first!</p>';
+                    return;
+                }
+                reviews.forEach(review => {
+                    const reviewCard = document.createElement('div');
+                    reviewCard.classList.add('review-card');
+                    let starsHtml = '';
+                    for (let i = 0; i < 5; i++) {
+                        starsHtml += `<span class="text-xl ${i < review.rating ? 'text-yellow-400' : 'text-gray-300'}">★</span>`;
+                    }
+                    reviewCard.innerHTML = `
+                        <p class="font-semibold text-gray-800 mb-2">${review.user}</p>
+                        <div class="flex items-center mb-3">
+                            <div class="rating-stars flex mr-2">${starsHtml}</div>
+                            <span class="text-sm text-gray-500">(${review.rating.toFixed(1)})</span>
+                        </div>
+                        <p class="text-gray-600 leading-relaxed">${review.comment}</p>
+                    `;
+                    reviewsContainer.appendChild(reviewCard);
+                });
+            };
+
+            // Quantity Selector Logic
+            let currentQuantity = 1;
+            const updateQuantityDisplay = () => {
+                quantityValue.textContent = currentQuantity;
+            };
+
+            increaseQuantityBtn.addEventListener('click', () => {
+                currentQuantity++;
+                updateQuantityDisplay();
+            });
+
+            decreaseQuantityBtn.addEventListener('click', () => {
+                if (currentQuantity > 1) {
+                    currentQuantity--;
+                    updateQuantityDisplay();
+                }
+            });
+
+            // Add to Cart Logic (Placeholder)
+            addToCartBtn.addEventListener('click', () => {
+                const product = getProductById(productId);
+                if (product) {
+                    // In a real app, you'd add this to a cart object/API
+                    console.log(`Added ${currentQuantity} of ${product.name} to cart.`);
+                    alert(`${product.name} added to cart!`);
+
+                    // Update cart count (example using localStorage)
+                    const currentCartCount = parseInt(localStorage.getItem('cartCount') || '0');
+                    localStorage.setItem('cartCount', currentCartCount + currentQuantity);
+                    updateCartCountUI();
+                }
+            });
+
+            // Buy Now Logic (Placeholder)
+            buyNowBtn.addEventListener('click', () => {
+                 const product = getProductById(productId);
+                if (product) {
+                    console.log(`Initiating buy now for ${currentQuantity} of ${product.name}.`);
+                    alert(`Proceeding to checkout for ${product.name}!`);
+                    // Redirect to checkout or cart page
+                    window.location.href = 'cart.html'; // Or checkout.html
+                }
+            });
+
+             // Update cart count from localStorage
+            const updateCartCountUI = () => {
+                const count = parseInt(localStorage.getItem('cartCount') || '0');
+                cartCountSpan.textContent = count;
+            };
+
+            // Fetch product data and display
+            // Simulate fetching data
+            setTimeout(() => {
+                const product = getProductById(productId);
+                displayProductDetails(product);
+                updateCartCountUI(); // Ensure cart count is updated on load
+            }, 500); // Simulate network delay
+
+
+            // Mobile menu toggle
+            const mobileMenuButton = document.querySelector('.md\\:hidden.ml-4');
+            const mobileMenu = document.querySelector('.md\\:hidden.bg-white');
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+        });
+    </script>
+</body>
+</html>
+[1]
