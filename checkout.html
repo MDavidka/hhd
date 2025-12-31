@@ -1,246 +1,286 @@
-<!DOCTYPE html>
-<html lang="en">
+```ts
+// checkout.ts
+/**
+ * @typedef {object} Address
+ * @property {string} firstName
+ * @property {string} lastName
+ * @property {string} streetAddress
+ * @property {string} city
+ * @property {string} state
+ * @property {string} zipCode
+ */
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Checkout - Phone Seller Store</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-        integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link rel="stylesheet" href="style.css">
-    <style>
-        /* Example CSS for better form display */
-        .form-group {
-            margin-bottom: 1rem;
-        }
+/**
+ * @typedef {object} PaymentInfo
+ * @property {string} cardNumber
+ * @property {string} expiryDate
+ * @property {string} cvv
+ */
 
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: bold;
-        }
+document.addEventListener('DOMContentLoaded', () => {
+  const checkoutContainer = document.createElement('div');
+  checkoutContainer.className = 'container mx-auto mt-8 p-4 md:p-8 lg:p-10';
+  checkoutContainer.innerHTML = `
+    <h1 class="text-2xl font-bold mb-4">Checkout</h1>
 
-        .form-group input,
-        .form-group select {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #ccc;
-            border-radius: 0.25rem;
-            font-size: 1rem;
-        }
+    <!-- Shipping Information -->
+    <div class="mb-6">
+      <h2 class="text-lg font-semibold mb-2">Shipping Information</h2>
+      <form id="shipping-form" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label for="shipping-first-name" class="block text-sm font-medium text-gray-700">First Name</label>
+          <input type="text" id="shipping-first-name" name="shipping-first-name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" required>
+        </div>
+        <div>
+          <label for="shipping-last-name" class="block text-sm font-medium text-gray-700">Last Name</label>
+          <input type="text" id="shipping-last-name" name="shipping-last-name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" required>
+        </div>
+        <div>
+          <label for="shipping-street-address" class="block text-sm font-medium text-gray-700">Street Address</label>
+          <input type="text" id="shipping-street-address" name="shipping-street-address" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" required>
+        </div>
+        <div>
+          <label for="shipping-city" class="block text-sm font-medium text-gray-700">City</label>
+          <input type="text" id="shipping-city" name="shipping-city" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" required>
+        </div>
+        <div>
+          <label for="shipping-state" class="block text-sm font-medium text-gray-700">State</label>
+          <select id="shipping-state" name="shipping-state" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" required>
+            <option value="">Select State</option>
+            <option value="AL">Alabama</option>
+            <option value="AK">Alaska</option>
+            <option value="AZ">Arizona</option>
+            <!-- ... more states ... -->
+          </select>
+        </div>
+        <div>
+          <label for="shipping-zip-code" class="block text-sm font-medium text-gray-700">Zip Code</label>
+          <input type="text" id="shipping-zip-code" name="shipping-zip-code" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" required>
+        </div>
+      </form>
+    </div>
 
-        .form-group input:focus,
-        .form-group select:focus {
-            border-color: #66afe9;
-            outline: 0;
-            box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6);
-        }
+    <!-- Billing Information -->
+    <div class="mb-6">
+      <h2 class="text-lg font-semibold mb-2">Billing Information</h2>
+      <div class="flex items-center mb-2">
+        <input type="checkbox" id="same-as-shipping" name="same-as-shipping" class="mr-2">
+        <label for="same-as-shipping" class="text-sm text-gray-700">Same as Shipping Address</label>
+      </div>
+      <form id="billing-form" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label for="billing-first-name" class="block text-sm font-medium text-gray-700">First Name</label>
+            <input type="text" id="billing-first-name" name="billing-first-name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" required>
+          </div>
+          <div>
+            <label for="billing-last-name" class="block text-sm font-medium text-gray-700">Last Name</label>
+            <input type="text" id="billing-last-name" name="billing-last-name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" required>
+          </div>
+          <div>
+            <label for="billing-street-address" class="block text-sm font-medium text-gray-700">Street Address</label>
+            <input type="text" id="billing-street-address" name="billing-street-address" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" required>
+          </div>
+          <div>
+            <label for="billing-city" class="block text-sm font-medium text-gray-700">City</label>
+            <input type="text" id="billing-city" name="billing-city" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" required>
+          </div>
+          <div>
+            <label for="billing-state" class="block text-sm font-medium text-gray-700">State</label>
+            <select id="billing-state" name="billing-state" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" required>
+              <option value="">Select State</option>
+              <option value="AL">Alabama</option>
+              <option value="AK">Alaska</option>
+              <option value="AZ">Arizona</option>
+              <!-- ... more states ... -->
+            </select>
+          </div>
+          <div>
+            <label for="billing-zip-code" class="block text-sm font-medium text-gray-700">Zip Code</label>
+            <input type="text" id="billing-zip-code" name="billing-zip-code" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" required>
+          </div>
+      </form>
+    </div>
 
-        .error-message {
-            color: red;
-            font-size: 0.875rem;
-            margin-top: 0.25rem;
-        }
-    </style>
-</head>
+    <!-- Payment Information -->
+    <div class="mb-6">
+      <h2 class="text-lg font-semibold mb-2">Payment Information</h2>
+      <form id="payment-form" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label for="card-number" class="block text-sm font-medium text-gray-700">Card Number</label>
+          <input type="text" id="card-number" name="card-number" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" required>
+        </div>
+        <div>
+          <label for="expiry-date" class="block text-sm font-medium text-gray-700">Expiry Date</label>
+          <input type="text" id="expiry-date" name="expiry-date" placeholder="MM/YY" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" required>
+        </div>
+        <div>
+          <label for="cvv" class="block text-sm font-medium text-gray-700">CVV</label>
+          <input type="text" id="cvv" name="cvv" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" required>
+        </div>
+      </form>
+    </div>
 
-<body class="bg-gray-100">
-    <!-- Header (consistent across all pages) -->
-    <header class="bg-white shadow-md">
-        <nav class="container mx-auto py-4 px-6">
-            <div class="flex items-center justify-between">
-                <a href="index.html" class="text-2xl font-bold text-gray-800">Phone Seller</a>
-                <div class="flex items-center space-x-4">
-                    <a href="index.html" class="text-gray-600 hover:text-gray-800">Home</a>
-                    <a href="product.html" class="text-gray-600 hover:text-gray-800">Products</a>
-                    <a href="cart.html" class="text-gray-600 hover:text-gray-800">Cart</a>
-                    <a href="contact.html" class="text-gray-600 hover:text-gray-800">Contact</a>
-                </div>
-            </div>
-        </nav>
-    </header>
+    <!-- Order Summary -->
+    <div class="mb-6">
+      <h2 class="text-lg font-semibold mb-2">Order Summary</h2>
+      <div id="order-summary">
+        <!-- Order summary items will be dynamically added here -->
+      </div>
+      <div class="font-bold text-lg mt-2">
+        Total: <span id="order-total">$0.00</span>
+      </div>
+    </div>
 
-    <!-- Main Content -->
-    <main class="container mx-auto mt-8 p-6 bg-white shadow-md rounded-md">
-        <h1 class="text-2xl font-semibold mb-6">Checkout</h1>
+    <!-- Place Order Button -->
+    <div>
+      <button id="place-order-button" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded">Place Order</button>
+    </div>
+  `;
 
-        <form id="checkoutForm" onsubmit="return validateForm()">
-            <!-- Shipping Information -->
-            <section class="mb-6">
-                <h2 class="text-xl font-semibold mb-4">Shipping Information</h2>
-                <div class="form-group">
-                    <label for="shippingName">Full Name:</label>
-                    <input type="text" id="shippingName" name="shippingName" placeholder="John Doe" required>
-                    <div id="shippingNameError" class="error-message"></div>
-                </div>
-                <div class="form-group">
-                    <label for="shippingAddress">Address:</label>
-                    <input type="text" id="shippingAddress" name="shippingAddress" placeholder="123 Main St"
-                        required>
-                    <div id="shippingAddressError" class="error-message"></div>
-                </div>
-                <div class="form-group">
-                    <label for="shippingCity">City:</label>
-                    <input type="text" id="shippingCity" name="shippingCity" placeholder="Anytown" required>
-                    <div id="shippingCityError" class="error-message"></div>
-                </div>
-                <div class="form-group">
-                    <label for="shippingState">State:</label>
-                    <input type="text" id="shippingState" name="shippingState" placeholder="CA" required>
-                    <div id="shippingStateError" class="error-message"></div>
-                </div>
-                <div class="form-group">
-                    <label for="shippingZip">Zip Code:</label>
-                    <input type="text" id="shippingZip" name="shippingZip" placeholder="12345" required>
-                    <div id="shippingZipError" class="error-message"></div>
-                </div>
-            </section>
+  document.body.appendChild(checkoutContainer);
 
-            <!-- Billing Information -->
-            <section class="mb-6">
-                <h2 class="text-xl font-semibold mb-4">Billing Information</h2>
-                <div class="form-group">
-                    <label for="billingName">Full Name:</label>
-                    <input type="text" id="billingName" name="billingName" placeholder="John Doe" required>
-                    <div id="billingNameError" class="error-message"></div>
-                </div>
-                <div class="form-group">
-                    <label for="billingAddress">Address:</label>
-                    <input type="text" id="billingAddress" name="billingAddress" placeholder="123 Main St" required>
-                    <div id="billingAddressError" class="error-message"></div>
-                </div>
-                <div class="form-group">
-                    <label for="billingCity">City:</label>
-                    <input type="text" id="billingCity" name="billingCity" placeholder="Anytown" required>
-                    <div id="billingCityError" class="error-message"></div>
-                </div>
-                <div class="form-group">
-                    <label for="billingState">State:</label>
-                    <input type="text" id="billingState" name="billingState" placeholder="CA" required>
-                    <div id="billingStateError" class="error-message"></div>
-                </div>
-                <div class="form-group">
-                    <label for="billingZip">Zip Code:</label>
-                    <input type="text" id="billingZip" name="billingZip" placeholder="12345" required>
-                    <div id="billingZipError" class="error-message"></div>
-                </div>
-            </section>
+  const shippingForm = document.getElementById('shipping-form');
+  const billingForm = document.getElementById('billing-form');
+  const paymentForm = document.getElementById('payment-form');
+  const sameAsShippingCheckbox = document.getElementById('same-as-shipping');
+  const orderSummary = document.getElementById('order-summary');
+  const orderTotalSpan = document.getElementById('order-total');
+  const placeOrderButton = document.getElementById('place-order-button');
 
-            <!-- Payment Information -->
-            <section class="mb-6">
-                <h2 class="text-xl font-semibold mb-4">Payment Information</h2>
-                <div class="form-group">
-                    <label for="cardNumber">Card Number:</label>
-                    <input type="text" id="cardNumber" name="cardNumber" placeholder="1234-5678-9012-3456" required>
-                    <div id="cardNumberError" class="error-message"></div>
-                </div>
-                <div class="form-group">
-                    <label for="cardExpiry">Expiry Date:</label>
-                    <input type="text" id="cardExpiry" name="cardExpiry" placeholder="MM/YY" required>
-                    <div id="cardExpiryError" class="error-message"></div>
-                </div>
-                <div class="form-group">
-                    <label for="cardCVC">CVC:</label>
-                    <input type="text" id="cardCVC" name="cardCVC" placeholder="123" required>
-                    <div id="cardCVCError" class="error-message"></div>
-                </div>
-            </section>
+  /**
+   * @returns {Address}
+   */
+  function getShippingAddress() {
+    return {
+      firstName: document.getElementById('shipping-first-name').value,
+      lastName: document.getElementById('shipping-last-name').value,
+      streetAddress: document.getElementById('shipping-street-address').value,
+      city: document.getElementById('shipping-city').value,
+      state: document.getElementById('shipping-state').value,
+      zipCode: document.getElementById('shipping-zip-code').value,
+    };
+  }
 
-            <!-- Order Summary -->
-            <section class="mb-6">
-                <h2 class="text-xl font-semibold mb-4">Order Summary</h2>
-                <div id="orderSummary">
-                    <!-- Order summary items will be dynamically added here using JavaScript -->
-                    <p>Subtotal: $199.99</p>
-                    <p>Shipping: $9.99</p>
-                    <p class="font-semibold">Total: $209.98</p>
-                </div>
-            </section>
+  /**
+   * @returns {Address}
+   */
+  function getBillingAddress() {
+    return {
+      firstName: document.getElementById('billing-first-name').value,
+      lastName: document.getElementById('billing-last-name').value,
+      streetAddress: document.getElementById('billing-street-address').value,
+      city: document.getElementById('billing-city').value,
+      state: document.getElementById('billing-state').value,
+      zipCode: document.getElementById('billing-zip-code').value,
+    };
+  }
 
-            <button type="submit"
-                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Place Order</button>
-        </form>
-    </main>
+  /**
+   * @returns {PaymentInfo}
+   */
+  function getPaymentInfo() {
+    return {
+      cardNumber: document.getElementById('card-number').value,
+      expiryDate: document.getElementById('expiry-date').value,
+      cvv: document.getElementById('cvv').value,
+    };
+  }
 
-    <!-- Footer (consistent across all pages) -->
-    <footer class="bg-gray-200 py-4 text-center">
-        <p>&copy; 2024 Phone Seller Store. All rights reserved.</p>
-    </footer>
+  /**
+   * @param {Address} address
+   * @param {string} prefix
+   */
+  function populateBillingFromShipping(address, prefix) {
+      document.getElementById(`${prefix}-first-name`).value = address.firstName;
+      document.getElementById(`${prefix}-last-name`).value = address.lastName;
+      document.getElementById(`${prefix}-street-address`).value = address.streetAddress;
+      document.getElementById(`${prefix}-city`).value = address.city;
+      document.getElementById(`${prefix}-state`).value = address.state;
+      document.getElementById(`${prefix}-zip-code`).value = address.zipCode;
+  }
 
-    <script>
-        // @ts-check
-        /**
-         * Validates the checkout form before submission.
-         * @returns {boolean} True if the form is valid, false otherwise.
-         */
-        function validateForm() {
-            let isValid = true;
+  // Populate billing address if "Same as Shipping" is checked
+  sameAsShippingCheckbox.addEventListener('change', () => {
+    if (sameAsShippingCheckbox.checked) {
+      const shippingAddress = getShippingAddress();
+      populateBillingFromShipping(shippingAddress, 'billing');
+    } else {
+      // Clear billing form
+      billingForm.reset();
+    }
+  });
 
-            isValid = validateField("shippingName", "shippingNameError") && isValid;
-            isValid = validateField("shippingAddress", "shippingAddressError") && isValid;
-            isValid = validateField("shippingCity", "shippingCityError") && isValid;
-            isValid = validateField("shippingState", "shippingStateError") && isValid;
-            isValid = validateField("shippingZip", "shippingZipError") && isValid;
+  /**
+   * @returns {number}
+   */
+  function calculateOrderTotal() {
+    // Retrieve cart items from local storage (or wherever they are stored)
+    const cartItems = JSON.parse(localStorage.getItem('cart') || '[]');
+    let total = 0;
 
-            isValid = validateField("billingName", "billingNameError") && isValid;
-            isValid = validateField("billingAddress", "billingAddressError") && isValid;
-            isValid = validateField("billingCity", "billingCityError") && isValid;
-            isValid = validateField("billingState", "billingStateError") && isValid;
-            isValid = validateField("billingZip", "billingZipError") && isValid;
+    // Calculate the total based on cart items
+    cartItems.forEach(item => {
+      total += item.price * item.quantity;
+    });
 
-            isValid = validateField("cardNumber", "cardNumberError") && isValid;
-            isValid = validateField("cardExpiry", "cardExpiryError") && isValid;
-            isValid = validateField("cardCVC", "cardCVCError") && isValid;
+    return total;
+  }
 
-            if (isValid) {
-                // Mock payment processing and order submission
-                alert("Order placed successfully! (Mock payment gateway)");
-                // You would typically redirect to a confirmation page or clear the cart here.
-                window.location.href = "index.html"; // Redirect to home page
-            }
+  function displayOrderSummary() {
+    const cartItems = JSON.parse(localStorage.getItem('cart') || '[]');
 
-            return false; // Prevent form submission if validation fails
-        }
+    if (cartItems.length === 0) {
+      orderSummary.innerHTML = '<p>Your cart is empty.</p>';
+      return;
+    }
 
-        /**
-         * Validates a single form field and displays an error message if necessary.
-         * @param {string} fieldId - The ID of the input field.
-         * @param {string} errorId - The ID of the error message element.
-         * @returns {boolean} True if the field is valid, false otherwise.
-         */
-        function validateField(fieldId, errorId) {
-            const field = document.getElementById(fieldId);
-            const errorElement = document.getElementById(errorId);
+    let summaryHTML = '<ul>';
+    cartItems.forEach(item => {
+      summaryHTML += `<li>${item.name} x ${item.quantity} - $${(item.price * item.quantity).toFixed(2)}</li>`;
+    });
+    summaryHTML += '</ul>';
 
-            if (!field.value.trim()) {
-                errorElement.textContent = "This field is required.";
-                return false;
-            } else {
-                errorElement.textContent = ""; // Clear any previous error message
-                return true;
-            }
-        }
+    orderSummary.innerHTML = summaryHTML;
+    orderTotalSpan.textContent = '$' + calculateOrderTotal().toFixed(2);
+  }
 
-        // Simulate fetching order summary from cart (replace with actual cart data)
-        document.addEventListener("DOMContentLoaded", function () {
-            const orderSummaryElement = document.getElementById("orderSummary");
-            if (orderSummaryElement) {
-                // In a real application, you'd retrieve the cart data from localStorage or a server.
-                // For this example, we'll use hardcoded values.
-                const subtotal = 199.99;
-                const shipping = 9.99;
-                const total = subtotal + shipping;
+  // Display order summary on page load
+  displayOrderSummary();
 
-                orderSummaryElement.innerHTML = `
-                    <p>Subtotal: $${subtotal.toFixed(2)}</p>
-                    <p>Shipping: $${shipping.toFixed(2)}</p>
-                    <p class="font-semibold">Total: $${total.toFixed(2)}</p>
-                `;
-            }
-        });
-    </script>
-</body>
+  // Handle form submission (replace with actual submission logic)
+  placeOrderButton.addEventListener('click', async () => {
+    // Basic validation
+    if (!shippingForm.checkValidity() || !billingForm.checkValidity() || !paymentForm.checkValidity()) {
+      alert('Please fill out all required fields.');
+      return;
+    }
 
-</html>
+    const shippingAddress = getShippingAddress();
+    const billingAddress = getBillingAddress();
+    const paymentInfo = getPaymentInfo();
+    const orderTotal = calculateOrderTotal();
+
+    // Here you would typically send the data to your server
+    console.log('Shipping Address:', shippingAddress);
+    console.log('Billing Address:', billingAddress);
+    console.log('Payment Info:', paymentInfo);
+    console.log('Order Total:', orderTotal);
+
+    // Simulate order processing
+    placeOrderButton.textContent = 'Processing...';
+    placeOrderButton.disabled = true;
+
+    // Clear the cart after successful checkout
+    localStorage.removeItem('cart');
+    orderSummary.innerHTML = '<p>Your order has been placed!</p>';
+    orderTotalSpan.textContent = '$0.00';
+
+    // Redirect to confirmation page or display a success message
+    setTimeout(() => {
+      alert('Order placed successfully!');
+      placeOrderButton.textContent = 'Place Order';
+      placeOrderButton.disabled = false;
+    }, 2000);
+  });
+});
+```
