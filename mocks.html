@@ -1,0 +1,109 @@
+```typescript
+// mocks.ts
+
+// Simulate API latency
+const LATENCY = 500; // milliseconds
+
+// Mock data for products
+export const mockProducts = [
+  {
+    id: '1',
+    name: 'Awesome Product 1',
+    description: 'This is the first awesome product.',
+    price: 29.99,
+    imageUrl: 'https://via.placeholder.com/150',
+  },
+  {
+    id: '2',
+    name: 'Incredible Product 2',
+    description: 'This is the second incredible product.',
+    price: 49.99,
+    imageUrl: 'https://via.placeholder.com/150',
+  },
+  {
+    id: '3',
+    name: 'Fantastic Product 3',
+    description: 'This is the third fantastic product.',
+    price: 79.99,
+    imageUrl: 'https://via.placeholder.com/150',
+  },
+];
+
+// Mock data for users
+export const mockUsers = [
+  {
+    id: '101',
+    username: 'john_doe',
+    email: 'john.doe@example.com',
+  },
+  {
+    id: '102',
+    username: 'jane_smith',
+    email: 'jane.smith@example.com',
+  },
+];
+
+// Mock function to simulate fetching products
+export const fetchProductsMock = (): Promise<typeof mockProducts> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(mockProducts);
+    }, LATENCY);
+  });
+};
+
+// Mock function to simulate fetching a single product
+export const fetchProductMock = (id: string): Promise<typeof mockProducts[0] | undefined> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      const product = mockProducts.find((p) => p.id === id);
+      resolve(product);
+    }, LATENCY);
+  });
+};
+
+// Mock function to simulate fetching users
+export const fetchUsersMock = (): Promise<typeof mockUsers> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(mockUsers);
+    }, LATENCY);
+  });
+};
+
+// Mock function to simulate user login
+export const loginUserMock = (username: string): Promise<{ id: string; username: string } | null> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      const user = mockUsers.find((u) => u.username === username);
+      if (user) {
+        resolve({ id: user.id, username: user.username });
+      } else {
+        resolve(null);
+      }
+    }, LATENCY);
+  });
+};
+
+// Mock function to simulate submitting a form
+export const submitFormMock = (data: any): Promise<{ success: boolean; message: string }> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      console.log('Form submitted with data:', data);
+      resolve({ success: true, message: 'Form submitted successfully!' });
+    }, LATENCY);
+  });
+};
+
+// Example usage (for demonstration/testing purposes):
+if (typeof window !== 'undefined') { // Check if running in a browser environment
+  (window as any).mocks = {
+    fetchProducts: fetchProductsMock,
+    fetchProduct: fetchProductMock,
+    fetchUsers: fetchUsersMock,
+    loginUser: loginUserMock,
+    submitForm: submitFormMock,
+  };
+}
+
+```
