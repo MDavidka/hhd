@@ -1,0 +1,360 @@
+[1<account.html>]
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Account - Phone Store</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Custom styles to ensure consistency with a minimalist, professional look */
+        body {
+            font-family: 'Inter', sans-serif; /* Assuming Inter is loaded via Tailwind or a custom font import */
+            background-color: #f8f9fa; /* Soft off-white background */
+            color: #343a40; /* Dark gray for primary text */
+        }
+        .nav-link {
+            @apply text-gray-700 hover:text-blue-600 transition-colors duration-200;
+        }
+        .btn-primary {
+            @apply bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md shadow-sm transition-colors duration-200 ease-in-out;
+        }
+        .btn-secondary {
+            @apply bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-md transition-colors duration-200 ease-in-out;
+        }
+        .btn-outline {
+            @apply border border-blue-600 text-blue-600 hover:bg-blue-50 active:bg-blue-100 font-semibold py-2 px-4 rounded-md transition-colors duration-200 ease-in-out;
+        }
+        .btn-danger {
+            @apply bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-md transition-colors duration-200 ease-in-out;
+        }
+        .card {
+            @apply bg-white rounded-lg shadow-md p-6 mb-6 border border-gray-200;
+        }
+        .input-field {
+            @apply w-full p-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 shadow-sm text-base;
+        }
+        .form-label {
+            @apply block text-sm font-medium text-gray-700 mb-2;
+        }
+        .section-title {
+            @apply text-2xl font-bold text-gray-800 mb-5;
+        }
+        .subheader {
+            @apply text-lg font-semibold text-gray-700 mb-3;
+        }
+        .text-muted {
+            @apply text-gray-500 text-sm;
+        }
+        .active-nav-link {
+            @apply text-blue-600 font-bold;
+        }
+        .table-row-divider > tbody > tr > td {
+            @apply border-t border-gray-200;
+        }
+        .table-row-divider > tbody > tr:first-child > td {
+            @apply border-t-0;
+        }
+        .modal-backdrop {
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        .modal-content {
+            max-height: calc(100vh - 4rem); /* Prevent modal content from exceeding viewport height */
+            overflow-y: auto;
+        }
+        /* Specific styles for account page */
+        .account-nav a {
+            @apply block py-3 px-4 rounded-md transition-colors duration-200 ease-in-out;
+        }
+        .account-nav .active a {
+            @apply bg-blue-100 text-blue-700 font-semibold;
+        }
+        .account-nav .inactive a {
+            @apply text-gray-600 hover:bg-gray-100;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+
+    <!-- Navigation Bar -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <nav class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center">
+                <a href="index.html" class="text-2xl font-bold text-blue-600">PhoneShop</a>
+            </div>
+            <div class="hidden md:flex space-x-6">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="product.html" class="nav-link">Products</a>
+                <a href="cart.html" class="nav-link">Cart</a>
+                <a href="account.html" class="nav-link active-nav-link">My Account</a>
+            </div>
+            <div class="md:hidden">
+                <button id="mobile-menu-button" class="text-gray-600 focus:outline-none">
+                    <i class="fas fa-bars text-2xl"></i>
+                </button>
+            </div>
+        </nav>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white shadow-md">
+            <a href="index.html" class="block py-3 px-4 text-gray-700 hover:bg-gray-100">Home</a>
+            <a href="product.html" class="block py-3 px-4 text-gray-700 hover:bg-gray-100">Products</a>
+            <a href="cart.html" class="block py-3 px-4 text-gray-700 hover:bg-gray-100">Cart</a>
+            <a href="account.html" class="block py-3 px-4 text-blue-600 font-semibold bg-blue-50">My Account</a>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8">
+        <div class="flex flex-col md:flex-row gap-8">
+            <!-- Sidebar Navigation -->
+            <aside class="w-full md:w-1/4 bg-white rounded-lg shadow-md p-6 h-fit">
+                <h2 class="section-title mb-5">Account</h2>
+                <nav class="account-nav">
+                    <ul>
+                        <li class="inactive"><a href="#profile">Profile Information</a></li>
+                        <li class="inactive"><a href="#orders">Order History</a></li>
+                        <li class="inactive"><a href="#addresses">Addresses</a></li>
+                        <li class="inactive"><a href="#payment">Payment Methods</a></li>
+                        <li class="mt-6"><button class="btn-danger w-full">Logout</button></li>
+                    </ul>
+                </nav>
+            </aside>
+
+            <!-- Main Content Area -->
+            <section class="w-full md:w-3/4">
+                <div id="profile" class="card">
+                    <h3 class="subheader">Profile Information</h3>
+                    <form id="profile-form">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="first-name" class="form-label">First Name</label>
+                                <input type="text" id="first-name" name="firstName" class="input-field" value="John" required>
+                            </div>
+                            <div>
+                                <label for="last-name" class="form-label">Last Name</label>
+                                <input type="text" id="last-name" name="lastName" class="input-field" value="Doe" required>
+                            </div>
+                            <div>
+                                <label for="email" class="form-label">Email Address</label>
+                                <input type="email" id="email" name="email" class="input-field" value="john.doe@example.com" readonly>
+                            </div>
+                            <div>
+                                <label for="phone" class="form-label">Phone Number</label>
+                                <input type="tel" id="phone" name="phone" class="input-field" value="+1 123-456-7890">
+                            </div>
+                        </div>
+                        <div class="mt-6 text-right">
+                            <button type="submit" class="btn-primary">Save Profile</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div id="orders" class="card">
+                    <h3 class="subheader">Order History</h3>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full table-row-divider">
+                            <thead>
+                                <tr class="text-left text-gray-600 font-semibold">
+                                    <th class="py-3 px-4">Order ID</th>
+                                    <th class="py-3 px-4">Date</th>
+                                    <th class="py-3 px-4">Total</th>
+                                    <th class="py-3 px-4">Status</th>
+                                    <th class="py-3 px-4">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="py-4 px-4">#12345</td>
+                                    <td class="py-4 px-4">2023-10-26</td>
+                                    <td class="py-4 px-4">$799.99</td>
+                                    <td class="py-4 px-4"><span class="bg-green-100 text-green-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded">Delivered</span></td>
+                                    <td class="py-4 px-4"><button class="btn-outline text-sm py-1 px-3">View Details</button></td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="py-4 px-4">#12344</td>
+                                    <td class="py-4 px-4">2023-10-20</td>
+                                    <td class="py-4 px-4">$999.00</td>
+                                    <td class="py-4 px-4"><span class="bg-yellow-100 text-yellow-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded">Shipped</span></td>
+                                    <td class="py-4 px-4"><button class="btn-outline text-sm py-1 px-3">View Details</button></td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="py-4 px-4">#12343</td>
+                                    <td class="py-4 px-4">2023-10-15</td>
+                                    <td class="py-4 px-4">$650.50</td>
+                                    <td class="py-4 px-4"><span class="bg-blue-100 text-blue-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded">Processing</span></td>
+                                    <td class="py-4 px-4"><button class="btn-outline text-sm py-1 px-3">View Details</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="addresses" class="card">
+                    <h3 class="subheader">Saved Addresses</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="border border-gray-300 rounded-md p-5 relative">
+                            <h4 class="font-semibold text-gray-700 mb-3">Home Address</h4>
+                            <p class="text-gray-600">123 Main Street, Apt 4B</p>
+                            <p class="text-gray-600">Anytown, CA 90210</p>
+                            <p class="text-gray-600">United States</p>
+                            <div class="absolute top-3 right-3 space-x-2">
+                                <button class="text-blue-500 hover:text-blue-700"><i class="fas fa-edit"></i></button>
+                                <button class="text-red-500 hover:text-red-700"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                        <div class="border border-gray-300 rounded-md p-5 flex items-center justify-center">
+                            <button class="btn-secondary w-full py-3"><i class="fas fa-plus mr-2"></i>Add New Address</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="payment" class="card">
+                    <h3 class="subheader">Payment Methods</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="border border-gray-300 rounded-md p-5 relative flex items-center justify-between">
+                            <div>
+                                <i class="fab fa-cc-visa text-3xl mr-4"></i>
+                                <span class="font-semibold text-gray-700">**** **** **** 1234</span>
+                            </div>
+                            <div class="absolute top-3 right-3 space-x-2">
+                                <button class="text-blue-500 hover:text-blue-700"><i class="fas fa-edit"></i></button>
+                                <button class="text-red-500 hover:text-red-700"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                        <div class="border border-gray-300 rounded-md p-5 relative flex items-center justify-between">
+                            <div>
+                                <i class="fab fa-cc-mastercard text-3xl mr-4"></i>
+                                <span class="font-semibold text-gray-700">**** **** **** 5678</span>
+                            </div>
+                            <div class="absolute top-3 right-3 space-x-2">
+                                <button class="text-blue-500 hover:text-blue-700"><i class="fas fa-edit"></i></button>
+                                <button class="text-red-500 hover:text-red-700"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                        <div class="border border-gray-300 rounded-md p-5 flex items-center justify-center">
+                            <button class="btn-secondary w-full py-3"><i class="fas fa-plus mr-2"></i>Add New Card</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 mt-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-lg font-bold mb-4">PhoneShop</h3>
+                    <p class="text-gray-400">Your one-stop shop for the latest smartphones and accessories.</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-4">Quick Links</h3>
+                    <ul>
+                        <li><a href="index.html" class="text-gray-400 hover:text-white">Home</a></li>
+                        <li><a href="product.html" class="text-gray-400 hover:text-white">Products</a></li>
+                        <li><a href="cart.html" class="text-gray-400 hover:text-white">Cart</a></li>
+                        <li><a href="account.html" class="text-gray-400 hover:text-white">My Account</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-4">Support</h3>
+                    <ul>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Contact Us</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">FAQ</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Shipping Policy</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Returns</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-4">Follow Us</h3>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-facebook-f text-xl"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-twitter text-xl"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-instagram text-xl"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-linkedin-in text-xl"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-6 text-center text-gray-500">
+                &copy; 2023 PhoneShop. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile menu toggle
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Smooth scrolling for account navigation
+        document.querySelectorAll('.account-nav a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    const offsetTop = targetElement.offsetTop - document.querySelector('header').offsetHeight - 20; // Adjust offset for header height
+                    window.scrollTo({
+                        top: offsetTop,
+                        behavior: 'smooth'
+                    });
+
+                    // Update active state
+                    document.querySelectorAll('.account-nav li').forEach(item => item.classList.add('inactive'));
+                    this.parentElement.classList.remove('inactive');
+                    this.parentElement.classList.add('active');
+                }
+            });
+        });
+
+        // Highlight active section on scroll
+        window.addEventListener('scroll', () => {
+            const sections = document.querySelectorAll('section > div[id]');
+            let currentSectionId = '';
+
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop - document.querySelector('header').offsetHeight - 50; // Adjust offset
+                if (window.scrollY >= sectionTop) {
+                    currentSectionId = section.getAttribute('id');
+                }
+            });
+
+            document.querySelectorAll('.account-nav li').forEach(item => {
+                const link = item.querySelector('a');
+                if (link && link.getAttribute('href').substring(1) === currentSectionId) {
+                    item.classList.add('active');
+                    item.classList.remove('inactive');
+                } else {
+                    item.classList.add('inactive');
+                    item.classList.remove('active');
+                }
+            });
+        });
+
+        // Initialize active state for the first section
+        const initialSectionId = window.location.hash ? window.location.hash : '#profile';
+        const initialLink = document.querySelector(`.account-nav a[href="${initialSectionId}"]`);
+        if (initialLink) {
+            initialLink.parentElement.classList.add('active');
+            initialLink.parentElement.classList.remove('inactive');
+        } else {
+             document.querySelector('.account-nav li:first-child').classList.add('active');
+             document.querySelector('.account-nav li:first-child').classList.remove('inactive');
+        }
+
+
+        // Placeholder for form submissions (would typically use fetch/axios)
+        document.getElementById('profile-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert('Profile updated successfully!');
+            // In a real app, send data to backend here
+        });
+    </script>
+</body>
+</html>
+[1<account.html>]
