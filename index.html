@@ -1,181 +1,103 @@
-<!DOCTYPE html>
-<html lang="en">
+import { initializeArtGallery } from './artGallery';
+ import { renderAboutSection } from './about';
+ import { renderContactSection } from './contact';
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Phone Store</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-        integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <style>
-        /* Example custom styles - consider moving to style.css */
-        .hero-section {
-            background-image: url('https://images.unsplash.com/photo-1511707171634-5efb676cd692?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
-            /* Replace with your image */
-            background-size: cover;
-            background-position: center;
-            height: 500px;
-            /* Adjust as needed */
-            color: white;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
+ document.addEventListener('DOMContentLoaded', () => {
+  const root = document.getElementById('root');
 
-        .featured-products {
-            padding: 2rem;
-        }
+  if (!root) {
+  document.body.innerHTML = `<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+  <strong class="font-bold">Error!</strong>
+  <span class="block sm:inline">Root element with ID 'root' not found.</span>
+  </div>`;
+  return;
+  }
 
-        .product-card {
-            border: 1px solid #ddd;
-            /* Light border */
-            padding: 1rem;
-            margin-bottom: 1rem;
-            border-radius: 0.5rem;
-        }
+  // Create header
+  const header = document.createElement('header');
+  header.className = 'bg-white shadow-md sticky top-0 z-50';
+  header.innerHTML = `
+  <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+  <a href="index.html" class="text-2xl font-bold text-gray-800">AI Art Gallery</a>
+  <nav>
+  <ul class="flex space-x-6">
+  <li><a href="index.html" class="hover:text-blue-500">Gallery</a></li>
+  <li><a href="about.html" class="hover:text-blue-500">About</a></li>
+  <li><a href="contact.html" class="hover:text-blue-500">Contact</a></li>
+  </ul>
+  </nav>
+  </div>
+  `;
 
-        .testimonial {
-            background-color: #f9f9f9;
-            /* Light background */
-            padding: 2rem;
-            margin-bottom: 2rem;
-            border-radius: 0.5rem;
-        }
+  // Create main content area
+  const main = document.createElement('main');
+  main.className = 'container mx-auto px-4 py-8';
+  main.id = 'main-content';
 
-        .cta-section {
-            background-color: #e2e8f0;
-            /* Lighter background */
-            padding: 2rem;
-            text-align: center;
-            border-radius: 0.5rem;
-        }
-    </style>
-</head>
+  // Create footer
+  const footer = document.createElement('footer');
+  footer.className = 'bg-gray-100 border-t border-gray-200 py-4 text-center text-gray-600';
+  footer.textContent = '© 2024 AI Art Gallery';
 
-<body class="bg-gray-100 font-sans">
+  // Append elements to the root
+  root.appendChild(header);
+  root.appendChild(main);
+  root.appendChild(footer);
 
-    <!-- Navigation Bar -->
-    <nav class="bg-white shadow-md">
-        <div class="container mx-auto px-4 py-3 flex items-center justify-between">
-            <a href="index.html" class="text-2xl font-bold text-gray-800">Phone Store</a>
-            <div class="space-x-4">
-                <a href="index.html" class="text-gray-600 hover:text-blue-500">Home</a>
-                <a href="product.html" class="text-gray-600 hover:text-blue-500">Products</a>
-                <a href="cart.html" class="text-gray-600 hover:text-blue-500">Cart</a>
-                <a href="contact.html" class="text-gray-600 hover:text-blue-500">Contact</a>
-            </div>
-        </div>
-    </nav>
+  // Initialize art gallery in the main content area
+  const galleryContainer = document.createElement('div');
+  galleryContainer.id = 'art-gallery';
+  main.appendChild(galleryContainer);
+  initializeArtGallery('art-gallery');
 
-    <!-- Hero Section -->
-    <section class="hero-section">
-        <h1 class="text-4xl font-bold mb-4">Find Your Perfect Phone</h1>
-        <p class="text-lg mb-8">Discover the latest smartphones at unbeatable prices.</p>
-        <a href="product.html"
-            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Shop Now</a>
-    </section>
+  // Load About Section
+  if (document.location.pathname.includes('about.html')) {
+  main.innerHTML = ''; // Clear existing content
+  main.appendChild(renderAboutSection());
+  }
 
-    <!-- Featured Products -->
-    <section class="featured-products container mx-auto">
-        <h2 class="text-3xl font-semibold mb-4">Featured Products</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+  // Load Contact Section
+  if (document.location.pathname.includes('contact.html')) {
+  main.innerHTML = ''; // Clear existing content
+  main.appendChild(renderContactSection());
+  }
 
-            <!-- Product 1 -->
-            <div class="product-card">
-                <img src="https://images.unsplash.com/photo-1511707171634-5efb676cd692?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8MHx8fA%3D%3D"
-                    alt="Phone 1" class="w-full h-48 object-cover mb-2">
-                <h3 class="text-xl font-semibold">AwesomePhone X</h3>
-                <p class="text-gray-700">$799</p>
-                <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-2"
-                    onclick="addToCart('AwesomePhone X', 799)">Add to Cart</button>
-            </div>
+  // Add navigation event listeners (example for About)
+  const aboutLink = document.querySelector('a[href="about.html"]');
+  if (aboutLink) {
+  aboutLink.addEventListener('click', (event) => {
+  event.preventDefault();
+  main.innerHTML = ''; // Clear existing content
+  main.appendChild(renderAboutSection());
+  window.history.pushState({ page: 'about' }, 'About', 'about.html');
+  });
+  }
 
-            <!-- Product 2 -->
-            <div class="product-card">
-                <img src="https://images.unsplash.com/photo-1511707171634-5efb676cd692?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8MHx8fA%3D%3D"
-                    alt="Phone 2" class="w-full h-48 object-cover mb-2">
-                <h3 class="text-xl font-semibold">SuperPhone Pro</h3>
-                <p class="text-gray-700">$999</p>
-                <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-2"
-                    onclick="addToCart('SuperPhone Pro', 999)">Add to Cart</button>
-            </div>
+  // Add navigation event listeners (example for Contact)
+  const contactLink = document.querySelector('a[href="contact.html"]');
+  if (contactLink) {
+  contactLink.addEventListener('click', (event) => {
+  event.preventDefault();
+  main.innerHTML = ''; // Clear existing content
+  main.appendChild(renderContactSection());
+  window.history.pushState({ page: 'contact' }, 'Contact', 'contact.html');
+  });
+  }
 
-            <!-- Product 3 -->
-            <div class="product-card">
-                <img src="https://images.unsplash.com/photo-1511707171634-5efb676cd692?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8MHx8fA%3D%3D"
-                    alt="Phone 3" class="w-full h-48 object-cover mb-2">
-                <h3 class="text-xl font-semibold">BudgetPhone 5000</h3>
-                <p class="text-gray-700">$299</p>
-                <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-2"
-                    onclick="addToCart('BudgetPhone 5000', 299)">Add to Cart</button>
-            </div>
-
-        </div>
-    </section>
-
-    <!-- Testimonials -->
-    <section class="container mx-auto mt-8">
-        <h2 class="text-3xl font-semibold mb-4">What Our Customers Say</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-            <!-- Testimonial 1 -->
-            <div class="testimonial">
-                <p class="text-gray-800">"I love my new phone! The camera is amazing and the battery lasts all day."</p>
-                <p class="text-gray-600">- John Doe</p>
-            </div>
-
-            <!-- Testimonial 2 -->
-            <div class="testimonial">
-                <p class="text-gray-800">"Great prices and fast shipping. I would definitely buy from this store again."
-                </p>
-                <p class="text-gray-600">- Jane Smith</p>
-            </div>
-
-        </div>
-    </section>
-
-    <!-- Call to Action -->
-    <section class="cta-section container mx-auto mt-8">
-        <h2 class="text-3xl font-semibold mb-4">Ready to Upgrade?</h2>
-        <p class="text-lg mb-8">Browse our selection of the latest smartphones and find the perfect one for you.</p>
-        <a href="product.html"
-            class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">View All Phones</a>
-    </section>
-
-    <!-- Footer -->
-    <footer class="bg-gray-800 text-white py-4 mt-8">
-        <div class="container mx-auto text-center">
-            <p>&copy; 2024 Phone Store. All rights reserved.</p>
-        </div>
-    </footer>
-
-    <script>
-        // @ts-check
-        /**
-         * @param {string} productName
-         * @param {number} productPrice
-         */
-        function addToCart(productName, productPrice) {
-            // Retrieve existing cart items from local storage or initialize an empty array
-            let cart = JSON.parse(localStorage.getItem('cart') || '[]');
-
-            // Add the new item to the cart
-            cart.push({
-                name: productName,
-                price: productPrice
-            });
-
-            // Store the updated cart back in local storage
-            localStorage.setItem('cart', JSON.stringify(cart));
-
-            alert(`${productName} added to cart!`); // Basic feedback
-        }
-    </script>
-
-</body>
-
-</html>
+  // Handle back/forward navigation
+  window.addEventListener('popstate', (event) => {
+  if (event.state && event.state.page === 'about') {
+  main.innerHTML = '';
+  main.appendChild(renderAboutSection());
+  } else if (event.state && event.state.page === 'contact') {
+  main.innerHTML = '';
+  main.appendChild(renderContactSection());
+  } else {
+  main.innerHTML = '';
+  const galleryContainer = document.createElement('div');
+  galleryContainer.id = 'art-gallery';
+  main.appendChild(galleryContainer);
+  initializeArtGallery('art-gallery');
+  }
+  });
+ });
