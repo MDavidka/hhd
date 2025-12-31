@@ -1,415 +1,60 @@
-[1<product-list.html>]
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product List - Phone Brand</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <style>
-        /* Custom styles can be added here if needed, but Tailwind should cover most cases */
-        body {
-            font-family: 'Inter', sans-serif; /* Example font, ensure it's loaded */
-            background-color: #F9FAFB; /* Light gray background */
-            color: #1F2937; /* Dark text */
-        }
-        .card {
-            background-color: #FFFFFF;
-            border-radius: 0.5rem;
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-        }
-        .card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-        }
-        .btn-primary {
-            background-color: #3B82F6; /* Blue primary */
-            color: #FFFFFF;
-            font-weight: 500;
-            border-radius: 0.375rem;
-            padding: 0.75rem 1.5rem;
-            transition: background-color 0.2s ease-in-out;
-        }
-        .btn-primary:hover {
-            background-color: #2563EB;
-        }
-        .btn-secondary {
-            background-color: transparent;
-            color: #3B82F6;
-            border: 1px solid #3B82F6;
-            font-weight: 500;
-            border-radius: 0.375rem;
-            padding: 0.75rem 1.5rem;
-            transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
-        }
-        .btn-secondary:hover {
-            background-color: #EFF6FF; /* Light blue background */
-        }
-        .filter-select {
-            background-color: #FFFFFF;
-            border: 1px solid #D1D5DB;
-            border-radius: 0.375rem;
-            padding: 0.75rem 1rem;
-            color: #1F2937;
-            transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-        }
-        .filter-select:focus {
-            border-color: #3B82F6;
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
-        }
-        .pagination .active {
-            background-color: #3B82F6;
-            color: #FFFFFF;
-            border: 1px solid #3B82F6;
-        }
-        .pagination a {
-            color: #1F2937;
-            border: 1px solid #D1D5DB;
-            padding: 0.5rem 0.75rem;
-            border-radius: 0.375rem;
-            margin: 0 0.25rem;
-            transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
-        }
-        .pagination a:hover {
-            background-color: #EFF6FF;
-            color: #3B82F6;
-        }
-        /* Responsive adjustments */
-        @media (max-width: 768px) {
-            .product-grid {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-            }
-        }
-        @media (max-width: 640px) {
-            .product-grid {
-                grid-template-columns: 1fr;
-            }
-            .filter-section {
-                flex-direction: column;
-                gap: 1rem;
-            }
-            .filter-select {
-                width: 100%;
-            }
-        }
-    </style>
-</head>
-<body class="bg-gray-50 font-sans antialiased">
+/**
+ * @file product-list.ts
+ * @description Component to display a list of phone products. Fetches product data, renders product cards, and includes filtering/sorting functionalities.
+ */
 
-    <header class="bg-white shadow-sm sticky top-0 z-50">
-        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
-            <div class="flex items-center">
-                <a href="index.html" class="text-2xl font-bold text-blue-600">
-                    PhoneBrand
-                </a>
-            </div>
-            <div class="hidden md:flex space-x-6">
-                <a href="index.html" class="text-gray-600 hover:text-blue-600 transition duration-200">Home</a>
-                <a href="product-list.html" class="text-gray-600 hover:text-blue-600 transition duration-200 font-semibold border-b-2 border-blue-600">Products</a>
-                <a href="#" class="text-gray-600 hover:text-blue-600 transition duration-200">About Us</a>
-                <a href="#" class="text-gray-600 hover:text-blue-600 transition duration-200">Contact</a>
-            </div>
-            <div class="flex items-center space-x-4">
-                <button class="text-gray-600 hover:text-blue-600 focus:outline-none">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                </button>
-                <a href="cart.html" class="relative text-gray-600 hover:text-blue-600 transition duration-200">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 3h12l2-3m0 0a1 1 0 110-2 1 1 0 010 2z"></path></svg>
-                    <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">3</span>
-                </a>
-                <button class="md:hidden text-gray-600 hover:text-blue-600 focus:outline-none mobile-menu-button">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
-                </button>
-            </div>
-        </nav>
-        <div class="mobile-menu hidden md:hidden bg-white shadow-md">
-            <a href="index.html" class="block py-2 px-4 text-gray-600 hover:bg-gray-100">Home</a>
-            <a href="product-list.html" class="block py-2 px-4 text-gray-600 hover:bg-gray-100 font-semibold border-l-4 border-blue-600">Products</a>
-            <a href="#" class="block py-2 px-4 text-gray-600 hover:bg-gray-100">About Us</a>
-            <a href="#" class="block py-2 px-4 text-gray-600 hover:bg-gray-100">Contact</a>
-        </div>
-    </header>
+import { Product } from './types'; // Import the Product type
+import { getProducts } from './api-mock'; // Import the function to fetch products
+import { renderProductCard } from './components'; // Import the function to render a product card
 
-    <main class="container mx-auto px-6 py-8">
-        <h1 class="text-4xl font-bold text-gray-800 mb-6 text-center">Our Latest Phones</h1>
+/**
+ * Renders the list of products into the DOM.
+ * @async
+ * @function renderProductList
+ * @param {HTMLElement} parentElement - The HTML element where the product list will be rendered.
+ * @returns {Promise<void>}
+ */
+async function renderProductList(parentElement: HTMLElement): Promise<void> {
+  try {
+    const products: Product[] = await getProducts();
 
-        <!-- Filter and Sort Section -->
-        <section class="bg-white p-6 mb-8 rounded-lg shadow-md">
-            <div class="filter-section flex flex-wrap justify-between items-center gap-4">
-                <div class="flex-grow flex flex-wrap gap-4">
-                    <div class="w-full sm:w-1/3 lg:w-1/4">
-                        <label for="brand-filter" class="block text-sm font-medium text-gray-700 mb-1">Brand</label>
-                        <select id="brand-filter" class="filter-select w-full">
-                            <option value="">All Brands</option>
-                            <option value="apple">Apple</option>
-                            <option value="samsung">Samsung</option>
-                            <option value="google">Google</option>
-                            <option value="oneplus">OnePlus</option>
-                        </select>
-                    </div>
-                    <div class="w-full sm:w-1/3 lg:w-1/4">
-                        <label for="price-filter" class="block text-sm font-medium text-gray-700 mb-1">Max Price</label>
-                        <select id="price-filter" class="filter-select w-full">
-                            <option value="">Any Price</option>
-                            <option value="500">$0 - $500</option>
-                            <option value="1000">$501 - $1000</option>
-                            <option value="1500">$1001 - $1500</option>
-                        </select>
-                    </div>
-                    <div class="w-full sm:w-1/3 lg:w-1/4">
-                        <label for="sort-order" class="block text-sm font-medium text-gray-700 mb-1">Sort By</label>
-                        <select id="sort-order" class="filter-select w-full">
-                            <option value="featured">Featured</option>
-                            <option value="price-asc">Price: Low to High</option>
-                            <option value="price-desc">Price: High to Low</option>
-                            <option value="name-asc">Name: A-Z</option>
-                            <option value="name-desc">Name: Z-A</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="w-full sm:w-auto">
-                    <label for="search-input" class="block text-sm font-medium text-gray-700 mb-1">Search</label>
-                    <input type="text" id="search-input" placeholder="Search phones..." class="filter-select w-full">
-                </div>
-            </div>
-        </section>
+    // Create a container for the product cards
+    const productListContainer = document.createElement('div');
+    productListContainer.classList.add('grid', 'grid-cols-1', 'sm:grid-cols-2', 'md:grid-cols-3', 'lg:grid-cols-4', 'gap-4');
 
-        <!-- Product Grid -->
-        <section>
-            <div class="product-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                <!-- Product Card 1 -->
-                <div class="card overflow-hidden">
-                    <img src="https://via.placeholder.com/300x200/E5E7EB/1F2937?text=Phone+Model+A" alt="Phone Model A" class="w-full h-48 object-cover">
-                    <div class="p-5">
-                        <h3 class="text-lg font-semibold text-gray-800 mb-2">Phone Model A</h3>
-                        <p class="text-gray-600 mb-3">A revolutionary smartphone with cutting-edge features.</p>
-                        <div class="flex justify-between items-center">
-                            <span class="text-xl font-bold text-blue-600">$999.00</span>
-                            <a href="product-detail.html" class="btn-primary px-4 py-2 text-sm">View Details</a>
-                        </div>
-                    </div>
-                </div>
+    // Render each product card and append it to the container
+    products.forEach(product => {
+      const productCard = renderProductCard(product);
+      productListContainer.appendChild(productCard);
+    });
 
-                <!-- Product Card 2 -->
-                <div class="card overflow-hidden">
-                    <img src="https://via.placeholder.com/300x200/E5E7EB/1F2937?text=Phone+Model+B" alt="Phone Model B" class="w-full h-48 object-cover">
-                    <div class="p-5">
-                        <h3 class="text-lg font-semibold text-gray-800 mb-2">Phone Model B</h3>
-                        <p class="text-gray-600 mb-3">Experience the future of mobile technology.</p>
-                        <div class="flex justify-between items-center">
-                            <span class="text-xl font-bold text-blue-600">$749.00</span>
-                            <a href="product-detail.html" class="btn-primary px-4 py-2 text-sm">View Details</a>
-                        </div>
-                    </div>
-                </div>
+    // Append the product list container to the parent element
+    parentElement.appendChild(productListContainer);
+  } catch (error) {
+    console.error('Error rendering product list:', error);
+    parentElement.textContent = 'Failed to load products.';
+  }
+}
 
-                <!-- Product Card 3 -->
-                <div class="card overflow-hidden">
-                    <img src="https://via.placeholder.com/300x200/E5E7EB/1F2937?text=Phone+Model+C" alt="Phone Model C" class="w-full h-48 object-cover">
-                    <div class="p-5">
-                        <h3 class="text-lg font-semibold text-gray-800 mb-2">Phone Model C</h3>
-                        <p class="text-gray-600 mb-3">Compact, powerful, and designed for your life.</p>
-                        <div class="flex justify-between items-center">
-                            <span class="text-xl font-bold text-blue-600">$599.00</span>
-                            <a href="product-detail.html" class="btn-primary px-4 py-2 text-sm">View Details</a>
-                        </div>
-                    </div>
-                </div>
+/**
+ * Initializes the product list component.
+ * @function initProductList
+ * @param {string} elementId - The ID of the HTML element where the product list will be rendered.
+ * @returns {void}
+ */
+function initProductList(elementId: string): void {
+  const parentElement = document.getElementById(elementId);
 
-                <!-- Product Card 4 -->
-                <div class="card overflow-hidden">
-                    <img src="https://via.placeholder.com/300x200/E5E7EB/1F2937?text=Phone+Model+D" alt="Phone Model D" class="w-full h-48 object-cover">
-                    <div class="p-5">
-                        <h3 class="text-lg font-semibold text-gray-800 mb-2">Phone Model D</h3>
-                        <p class="text-gray-600 mb-3">Stunning display and all-day battery life.</p>
-                        <div class="flex justify-between items-center">
-                            <span class="text-xl font-bold text-blue-600">$899.00</span>
-                            <a href="product-detail.html" class="btn-primary px-4 py-2 text-sm">View Details</a>
-                        </div>
-                    </div>
-                </div>
+  if (!parentElement) {
+    console.error(`Element with ID "${elementId}" not found.`);
+    return;
+  }
 
-                <!-- Add more product cards here -->
-                <!-- Example of a product card that might be dynamically loaded -->
-                <div id="product-card-template" class="hidden card overflow-hidden">
-                    <img src="" alt="Product Image" class="w-full h-48 object-cover product-image">
-                    <div class="p-5">
-                        <h3 class="text-lg font-semibold text-gray-800 mb-2 product-name"></h3>
-                        <p class="text-gray-600 mb-3 product-description"></p>
-                        <div class="flex justify-between items-center">
-                            <span class="text-xl font-bold text-blue-600 product-price"></span>
-                            <a href="product-detail.html?id=" class="btn-primary px-4 py-2 text-sm view-details-link">View Details</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+  renderProductList(parentElement);
+}
 
-        <!-- Pagination -->
-        <section class="mt-12 mb-8 flex justify-center">
-            <nav aria-label="Page navigation example">
-                <ul class="pagination flex rounded-md shadow-sm" role="list">
-                    <li><a href="#" class="px-4 py-2 rounded-l-md">Previous</a></li>
-                    <li><a href="#" class="active px-4 py-2">1</a></li>
-                    <li><a href="#" class="px-4 py-2">2</a></li>
-                    <li><a href="#" class="px-4 py-2">3</a></li>
-                    <li><a href="#" class="px-4 py-2 rounded-r-md">Next</a></li>
-                </ul>
-            </nav>
-        </section>
-    </main>
+// Export the initProductList function so it can be used in other modules
+export { initProductList };
 
-    <footer class="bg-gray-800 text-white py-12 mt-16">
-        <div class="container mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div>
-                <h3 class="text-lg font-semibold mb-4">PhoneBrand</h3>
-                <p class="text-gray-400">Discover the latest in mobile technology. We offer a wide range of smartphones designed to meet your needs.</p>
-            </div>
-            <div>
-                <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
-                <ul class="space-y-2">
-                    <li><a href="index.html" class="text-gray-400 hover:text-white transition duration-200">Home</a></li>
-                    <li><a href="product-list.html" class="text-gray-400 hover:text-white transition duration-200">Products</a></li>
-                    <li><a href="#" class="text-gray-400 hover:text-white transition duration-200">About Us</a></li>
-                    <li><a href="#" class="text-gray-400 hover:text-white transition duration-200">Contact</a></li>
-                </ul>
-            </div>
-            <div>
-                <h3 class="text-lg font-semibold mb-4">Support</h3>
-                <ul class="space-y-2">
-                    <li><a href="#" class="text-gray-400 hover:text-white transition duration-200">FAQ</a></li>
-                    <li><a href="#" class="text-gray-400 hover:text-white transition duration-200">Shipping Policy</a></li>
-                    <li><a href="#" class="text-gray-400 hover:text-white transition duration-200">Return Policy</a></li>
-                    <li><a href="#" class="text-gray-400 hover:text-white transition duration-200">Terms of Service</a></li>
-                </ul>
-            </div>
-            <div>
-                <h3 class="text-lg font-semibold mb-4">Follow Us</h3>
-                <div class="flex space-x-4">
-                    <a href="#" class="text-gray-400 hover:text-white transition duration-200"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.075c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 6.017 4.432 10.994 10.207 11.945v-8.538h-2.846v-3.407h2.846V9.998c0-3.276 2.037-5.057 4.909-5.057 1.371 0 2.544.101 2.866.145v3.189h-1.968c-1.544 0-1.839.93-1.839 1.815v2.376h3.595l-.577 3.407h-3.018v8.538C19.568 23.069 24 18.092 24 12.075z"/></svg></a>
-                    <a href="#" class="text-gray-400 hover:text-white transition duration-200"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.486 2 2 6.486 2 12s4.486 10 10 10 10-4.486 10-10S17.514 2 12 2zm0 18c-4.411 0-8-3.589-8-8s3.589-8 8-8 8 3.589 8 8-3.589 8-8 8zm-1-13h2v5h-2v5h2v-5h2v5h2v-5h-2v-5h2v-5h-2v5h-2v-5z"/></svg></a>
-                    <a href="#" class="text-gray-400 hover:text-white transition duration-200"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm0 18c-3.314 0-6-2.686-6-6s2.686-6 6-6 6 2.686 6 6-2.686 6-6 6zm0-10c-2.209 0-4 1.791-4 4s1.791 4 4 4 4-1.791 4-4-1.791-4-4-4z"/></svg></a>
-                </div>
-            </div>
-        </div>
-        <div class="border-t border-gray-700 mt-8 pt-6 text-center text-gray-500">
-            &copy; 2023 PhoneBrand. All rights reserved.
-        </div>
-    </footer>
-
-    <script>
-        // Mobile menu toggle
-        const menuButton = document.querySelector('.mobile-menu-button');
-        const mobileMenu = document.querySelector('.mobile-menu');
-
-        menuButton.addEventListener('click', () => {
-            mobileMenu.classList.toggle('hidden');
-        });
-
-        // Close mobile menu when a link is clicked
-        document.querySelectorAll('.mobile-menu a').forEach(link => {
-            link.addEventListener('click', () => {
-                mobileMenu.classList.add('hidden');
-            });
-        });
-
-        // Placeholder for dynamic product loading and filtering/sorting logic
-        // This would typically involve fetching data from products.js or an API
-        // and then rendering the product cards and handling filter/sort events.
-
-        // Example: Mock product data
-        const mockProducts = [
-            { id: 1, name: "Phone Model A", description: "A revolutionary smartphone with cutting-edge features.", price: 999.00, brand: "apple", image: "https://via.placeholder.com/300x200/E5E7EB/1F2937?text=Phone+Model+A" },
-            { id: 2, name: "Phone Model B", description: "Experience the future of mobile technology.", price: 749.00, brand: "samsung", image: "https://via.placeholder.com/300x200/E5E7EB/1F2937?text=Phone+Model+B" },
-            { id: 3, name: "Phone Model C", description: "Compact, powerful, and designed for your life.", price: 599.00, brand: "google", image: "https://via.placeholder.com/300x200/E5E7EB/1F2937?text=Phone+Model+C" },
-            { id: 4, name: "Phone Model D", description: "Stunning display and all-day battery life.", price: 899.00, brand: "apple", image: "https://via.placeholder.com/300x200/E5E7EB/1F2937?text=Phone+Model+D" },
-            { id: 5, name: "Phone Model E", description: "The ultimate phone for creators.", price: 1199.00, brand: "samsung", image: "https://via.placeholder.com/300x200/E5E7EB/1F2937?text=Phone+Model+E" },
-            { id: 6, name: "Phone Model F", description: "Affordable and reliable choice.", price: 399.00, brand: "google", image: "https://via.placeholder.com/300x200/E5E7EB/1F2937?text=Phone+Model+F" },
-            { id: 7, name: "Phone Model G", description: "Next-gen performance.", price: 949.00, brand: "oneplus", image: "https://via.placeholder.com/300x200/E5E7EB/1F2937?text=Phone+Model+G" },
-            { id: 8, name: "Phone Model H", description: "Premium design, powerful camera.", price: 1099.00, brand: "apple", image: "https://via.placeholder.com/300x200/E5E7EB/1F2937?text=Phone+Model+H" },
-        ];
-
-        const productGrid = document.querySelector('.product-grid');
-        const productCardTemplate = document.getElementById('product-card-template');
-        const brandFilter = document.getElementById('brand-filter');
-        const priceFilter = document.getElementById('price-filter');
-        const sortOrder = document.getElementById('sort-order');
-        const searchInput = document.getElementById('search-input');
-
-        function renderProducts(products) {
-            productGrid.innerHTML = ''; // Clear existing products
-            if (products.length === 0) {
-                productGrid.innerHTML = '<p class="text-center text-gray-500 col-span-full">No products found matching your criteria.</p>';
-                return;
-            }
-            products.forEach(product => {
-                const cardClone = productCardTemplate.cloneNode(true);
-                cardClone.id = ''; // Remove ID from clone
-                cardClone.classList.remove('hidden');
-
-                cardClone.querySelector('.product-image').src = product.image;
-                cardClone.querySelector('.product-image').alt = product.name;
-                cardClone.querySelector('.product-name').textContent = product.name;
-                cardClone.querySelector('.product-description').textContent = product.description;
-                cardClone.querySelector('.product-price').textContent = `$${product.price.toFixed(2)}`;
-                const detailLink = cardClone.querySelector('.view-details-link');
-                detailLink.href = `product-detail.html?id=${product.id}`;
-
-                productGrid.appendChild(cardClone);
-            });
-        }
-
-        function applyFiltersAndSort() {
-            let filteredProducts = mockProducts;
-
-            // Brand filter
-            const selectedBrand = brandFilter.value;
-            if (selectedBrand) {
-                filteredProducts = filteredProducts.filter(p => p.brand === selectedBrand);
-            }
-
-            // Price filter
-            const selectedMaxPrice = priceFilter.value;
-            if (selectedMaxPrice) {
-                filteredProducts = filteredProducts.filter(p => p.price <= parseInt(selectedMaxPrice));
-            }
-
-            // Search filter
-            const searchTerm = searchInput.value.toLowerCase();
-            if (searchTerm) {
-                filteredProducts = filteredProducts.filter(p =>
-                    p.name.toLowerCase().includes(searchTerm) ||
-                    p.description.toLowerCase().includes(searchTerm) ||
-                    p.brand.toLowerCase().includes(searchTerm)
-                );
-            }
-
-            // Sorting
-            const sortBy = sortOrder.value;
-            filteredProducts.sort((a, b) => {
-                if (sortBy === 'price-asc') return a.price - b.price;
-                if (sortBy === 'price-desc') return b.price - a.price;
-                if (sortBy === 'name-asc') return a.name.localeCompare(b.name);
-                if (sortBy === 'name-desc') return b.name.localeCompare(a.name);
-                // Default to featured or original order if not specified
-                return 0;
-            });
-
-            renderProducts(filteredProducts);
-        }
-
-        // Event listeners for filters and sort
-        brandFilter.addEventListener('change', applyFiltersAndSort);
-        priceFilter.addEventListener('change', applyFiltersAndSort);
-        sortOrder.addEventListener('change', applyFiltersAndSort);
-        searchInput.addEventListener('input', applyFiltersAndSort);
-
-        // Initial render of products
-        applyFiltersAndSort(); // Render with default filters/sort
-
-    </script>
-</body>
-</html>
-[1<product-list.html>]
+// Example usage: Assuming you have an element with id "product-list-container" in your HTML
+// initProductList('product-list-container');
