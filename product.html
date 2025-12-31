@@ -1,0 +1,238 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Details - Phone Store</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <style>
+    /* Example Custom Styles - Consider moving to style.css */
+    .product-image {
+      max-height: 400px;
+      object-fit: contain;
+    }
+
+    .star-rating {
+      font-size: 1.2em;
+      color: #ffc107;
+    }
+
+    .breadcrumb a {
+      color: #6b7280;
+      /* Gray-500 */
+    }
+
+    .breadcrumb a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+
+<body class="bg-gray-100 font-sans">
+  <!-- Header (Consistent with other pages) -->
+  <header class="bg-white shadow-md py-4">
+    <div class="container mx-auto px-4">
+      <nav class="flex items-center justify-between">
+        <a href="index.html" class="text-2xl font-bold text-gray-800">Phone Store</a>
+        <div class="flex items-center space-x-4">
+          <a href="index.html" class="text-gray-600 hover:text-gray-800">Home</a>
+          <a href="cart.html" class="text-gray-600 hover:text-gray-800">
+            <i class="fas fa-shopping-cart"></i> Cart
+            <span id="cart-count"
+              class="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">0</span>
+          </a>
+          <a href="contact.html" class="text-gray-600 hover:text-gray-800">Contact</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Breadcrumb Navigation -->
+  <div class="container mx-auto mt-4 px-4 breadcrumb">
+    <a href="index.html" class="hover:underline">Home</a> &raquo;
+    <span class="text-gray-500">Product Details</span>
+  </div>
+
+  <!-- Product Details Section -->
+  <section class="container mx-auto mt-8 px-4">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <!-- Product Image -->
+      <div>
+        <img src="https://via.placeholder.com/400" alt="Product Image" class="product-image rounded-lg shadow-md">
+      </div>
+
+      <!-- Product Information -->
+      <div>
+        <h1 id="product-name" class="text-3xl font-semibold text-gray-900 mb-2">Product Name</h1>
+        <div class="flex items-center mb-4">
+          <span class="star-rating">&#9733;&#9733;&#9733;&#9733;&#9734;</span>
+          <span class="text-gray-600 ml-2">(4.0/5)</span>
+        </div>
+        <p id="product-description" class="text-gray-700 mb-4">
+          A detailed description of the product will go here. This should include key features,
+          specifications, and benefits.
+        </p>
+        <div class="mb-4">
+          <span class="font-bold text-gray-800">Price:</span>
+          <span id="product-price" class="text-xl text-green-600">$XXX.XX</span>
+        </div>
+
+        <!-- Add to Cart Button -->
+        <button id="add-to-cart-btn"
+          class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+          <i class="fas fa-shopping-cart mr-2"></i> Add to Cart
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Product Specifications -->
+  <section class="container mx-auto mt-8 px-4">
+    <h2 class="text-2xl font-semibold text-gray-900 mb-4">Specifications</h2>
+    <table class="table-auto w-full">
+      <thead>
+        <tr class="bg-gray-200">
+          <th class="px-4 py-2 text-left">Feature</th>
+          <th class="px-4 py-2 text-left">Value</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="border px-4 py-2">Display</td>
+          <td id="display-spec" class="border px-4 py-2">6.5-inch AMOLED</td>
+        </tr>
+        <tr>
+          <td class="border px-4 py-2">Processor</td>
+          <td id="processor-spec" class="border px-4 py-2">Octa-Core Snapdragon</td>
+        </tr>
+        <tr>
+          <td class="border px-4 py-2">RAM</td>
+          <td id="ram-spec" class="border px-4 py-2">8GB</td>
+        </tr>
+        <tr>
+          <td class="border px-4 py-2">Storage</td>
+          <td id="storage-spec" class="border px-4 py-2">128GB</td>
+        </tr>
+        <tr>
+          <td class="border px-4 py-2">Camera</td>
+          <td id="camera-spec" class="border px-4 py-2">48MP + 12MP + 5MP</td>
+        </tr>
+        <tr>
+          <td class="border px-4 py-2">Battery</td>
+          <td id="battery-spec" class="border px-4 py-2">4500 mAh</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- Customer Reviews -->
+  <section class="container mx-auto mt-8 px-4">
+    <h2 class="text-2xl font-semibold text-gray-900 mb-4">Customer Reviews</h2>
+    <div class="space-y-4">
+      <!-- Review 1 -->
+      <div class="bg-white rounded-lg shadow-md p-4">
+        <div class="flex items-center mb-2">
+          <span class="star-rating">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+          <span class="text-gray-600 ml-2">John Doe</span>
+        </div>
+        <p class="text-gray-700">
+          Great phone! Excellent performance and the camera is amazing.
+        </p>
+      </div>
+
+      <!-- Review 2 -->
+      <div class="bg-white rounded-lg shadow-md p-4">
+        <div class="flex items-center mb-2">
+          <span class="star-rating">&#9733;&#9733;&#9733;&#9734;&#9734;</span>
+          <span class="text-gray-600 ml-2">Jane Smith</span>
+        </div>
+        <p class="text-gray-700">
+          Good phone for the price. Battery life could be better.
+        </p>
+      </div>
+      <!-- Add more reviews dynamically with JavaScript -->
+    </div>
+  </section>
+
+  <!-- Footer (Consistent with other pages) -->
+  <footer class="bg-gray-800 text-white py-4 mt-8">
+    <div class="container mx-auto px-4 text-center">
+      <p>&copy; 2024 Phone Store. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    // @ts-check
+    document.addEventListener('DOMContentLoaded', () => {
+      // Mock Product Data (Replace with actual data fetching)
+      const product = {
+        name: 'Awesome Phone X',
+        description: 'This is a sample phone description. It boasts a powerful processor, stunning display, and long-lasting battery.',
+        price: 799.99,
+        display: '6.7-inch Super AMOLED',
+        processor: 'Snapdragon 888',
+        ram: '12GB',
+        storage: '256GB',
+        camera: '108MP + 12MP + 5MP',
+        battery: '5000 mAh',
+      };
+
+      // Populate Product Details
+      document.getElementById('product-name').textContent = product.name;
+      document.getElementById('product-description').textContent = product.description;
+      document.getElementById('product-price').textContent = `$${product.price.toFixed(2)}`;
+      document.getElementById('display-spec').textContent = product.display;
+      document.getElementById('processor-spec').textContent = product.processor;
+      document.getElementById('ram-spec').textContent = product.ram;
+      document.getElementById('storage-spec').textContent = product.storage;
+      document.getElementById('camera-spec').textContent = product.camera;
+      document.getElementById('battery-spec').textContent = product.battery;
+
+      // Add to Cart Functionality
+      const addToCartBtn = document.getElementById('add-to-cart-btn');
+      if (addToCartBtn) {
+        addToCartBtn.addEventListener('click', () => {
+          // Get existing cart or create a new one
+          const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+
+          // Add the product to the cart (you might want to include quantity)
+          cart.push({
+            name: product.name,
+            price: product.price,
+            // Add other relevant details
+          });
+
+          // Save the cart back to localStorage
+          localStorage.setItem('cart', JSON.stringify(cart));
+
+          // Update cart count in header (if needed)
+          updateCartCount();
+
+          // Provide user feedback (e.g., a small popup or message)
+          alert('Added to cart!');
+        });
+      }
+
+      // Function to update cart count in the header
+      function updateCartCount() {
+        const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        const cartCountElement = document.getElementById('cart-count');
+        if (cartCountElement) {
+          cartCountElement.textContent = cart.length.toString();
+        }
+      }
+
+      // Initial cart count update
+      updateCartCount();
+    });
+  </script>
+</body>
+
+</html>
+```
+[1<product.html>]
