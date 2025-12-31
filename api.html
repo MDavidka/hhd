@@ -1,0 +1,111 @@
+```typescript
+// api.ts
+
+// Define base URL, allowing easy switching between environments
+const BASE_URL = process.env.NODE_ENV === 'development' ? '/api' : 'https://your-production-api.com';
+
+// Define a generic type for API responses
+interface ApiResponse<T> {
+  data: T | null;
+  error: string | null;
+  status: number;
+}
+
+// Helper function to handle HTTP requests and response parsing
+async function handleRequest<T>(
+  url: string,
+  method: string = 'GET',
+  body: any = null,
+  headers: Record<string, string> = {}
+): Promise<ApiResponse<T>> {
+  try {
+    const options: RequestInit = {
+      method,
+      headers: {
+        'Content-Type': 'application/json',
+        ...headers,
+      },
+      body: body ? JSON.stringify(body) : null,
+    };
+
+    const response = await fetch(url, options);
+    const data = await response.json();
+
+    if (!response.ok) {
+      // Handle HTTP error statuses (e.g., 400, 500)
+      return { data: null, error: data.message || 'Request failed', status: response.status };
+    }
+
+    return { data: data as T, error: null, status: response.status };
+  } catch (error: any) {
+    // Handle network errors, JSON parsing errors, etc.
+    console.error('API Error:', error);
+    return { data: null, error: error.message || 'An unexpected error occurred', status: 500 };
+  }
+}
+
+// Example API functions (adjust types as needed)
+
+// Get a list of items
+export async function getItems(): Promise<ApiResponse<any[]>> {
+  return handleRequest<any[]>(`${BASE_URL}/items`);
+}
+
+// Get a single item by ID
+export async function getItem(id: string): Promise<ApiResponse<any>> {
+  return handleRequest<any>(`${BASE_URL}/items/${id}`);
+}
+
+// Create a new item
+export async function createItem(itemData: any): Promise<ApiResponse<any>> {
+  return handleRequest<any>(`${BASE_URL}/items`, 'POST', itemData);
+}
+
+// Update an existing item
+export async function updateItem(id: string, itemData: any): Promise<ApiResponse<any>> {
+  return handleRequest<any>(`${BASE_URL}/items/${id}`, 'PUT', itemData);
+}
+
+// Delete an item
+export async function deleteItem(id: string): Promise<ApiResponse<void>> {
+  return handleRequest<void>(`${BASE_URL}/items/${id}`, 'DELETE');
+}
+
+// User authentication (example)
+export async function login(credentials: any): Promise<ApiResponse<{ token: string; user: any }>> {
+  return handleRequest<{ token: string; user: any }>(`${BASE_URL}/login`, 'POST', credentials);
+}
+
+export async function register(userData: any): Promise<ApiResponse<{ token: string; user: any }>> {
+  return handleRequest<{ token: string; user: any }>(`${BASE_URL}/register`, 'POST', userData);
+}
+
+// Mock API calls (for development without a backend)
+// These would typically be in a separate 'mocks.ts' file, but included here for completeness.
+// In a real application, you'd use a mocking library like 'msw' or 'nock' for more sophisticated mocking.
+
+// Simulate API latency
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+if (process.env.NODE_ENV === 'development') {
+  // Mock GET request for items
+  (window as any).mockGetItems = async () => {
+    await delay(500); // Simulate network latency
+
+    const mockItems = [
+      { id: '1', name: 'Mock Item 1', description: 'This is a mock item.' },
+      { id: '2', name: 'Mock Item 2', description: 'This is another mock item.' },
+    ];
+
+    return { data: mockItems, error: null, status: 200 };
+  };
+
+  // Mock POST request for creating an item
+  (window as any).mockCreateItem = async (itemData: any) => {
+    await delay(500);
+
+    const newItem = { id: Math.random().toString(36).substring(7), ...itemData };
+    return { data: newItem, error: null, status: 201 };
+  };
+}
+```
