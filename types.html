@@ -1,0 +1,74 @@
+```typescript
+// types.ts
+
+// Define a generic type for API responses
+export type ApiResponse<T> = {
+  success: boolean;
+  data?: T;
+  error?: string;
+};
+
+// Define the structure for a Product
+export interface Product {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  imageUrl: string;
+  category: string;
+}
+
+// Define the structure for a User
+export interface User {
+  id: string;
+  username: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  // Add other user-related properties as needed
+}
+
+// Define the structure for a Cart Item
+export interface CartItem {
+  productId: string;
+  quantity: number;
+}
+
+// Define the structure for an Order
+export interface Order {
+  id: string;
+  userId: string;
+  items: CartItem[];
+  totalAmount: number;
+  orderDate: Date;
+  status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+}
+
+// Define a type for form input change events
+export type InputChangeEvent = React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>;
+
+// Define a type for button click events
+export type ButtonClickEvent = React.MouseEvent<HTMLButtonElement>;
+
+// Define a type for form submit events
+export type FormSubmitEvent = React.FormEvent<HTMLFormElement>;
+
+// Define possible values for theme
+export type Theme = 'light' | 'dark';
+
+// Define possible values for alert types
+export type AlertType = 'success' | 'warning' | 'error' | 'info';
+
+// Define the structure for an Alert message
+export interface AlertMessage {
+  id: string;
+  type: AlertType;
+  message: string;
+}
+
+// Define possible values for button variants
+export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'danger';
+
+// Define possible values for input types
+export type InputType = 'text' | 'email' | 'password' | 'number' | 'date';
+```
