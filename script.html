@@ -1,0 +1,854 @@
+// script.js
+
+// --- Utility Functions (imported from utils.js in a real app) ---
+const formatCurrency = (amount) => {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+  }).format(amount);
+};
+
+const getElement = (selector) => {
+  const element = document.querySelector(selector);
+  if (!element) {
+    console.warn(`Element not found: ${selector}`);
+    return null;
+  }
+  return element;
+};
+
+const getElements = (selector) => {
+  const elements = document.querySelectorAll(selector);
+  if (elements.length === 0) {
+    console.warn(`No elements found for selector: ${selector}`);
+  }
+  return elements;
+};
+
+const showNotification = (message, type = 'info') => {
+  const notificationContainer = getElement('.notification-container');
+  if (!notificationContainer) return;
+
+  const notification = document.createElement('div');
+  notification.className = `notification notification-${type} fixed top-4 right-4 p-4 rounded-lg shadow-md z-50 transition-all duration-300 ease-out opacity-0 translate-x-8`;
+  notification.innerHTML = `
+    <div class="flex items-center">
+      <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        ${type === 'success' ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>' : ''}
+        ${type === 'error' ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>' : ''}
+        ${type === 'info' ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v4h-1V8h1V4h1v4h1v8z"></path>' : ''}
+        ${type === 'warning' ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>' : ''}
+      </svg>
+      <span>${message}</span>
+    </div>
+  `;
+  notificationContainer.appendChild(notification);
+
+  // Fade in
+  setTimeout(() => {
+    notification.classList.remove('opacity-0', 'translate-x-8');
+    notification.classList.add('opacity-100', 'translate-x-0');
+  }, 50);
+
+  // Fade out and remove
+  setTimeout(() => {
+    notification.classList.remove('opacity-100', 'translate-x-0');
+    notification.classList.add('opacity-0', 'translate-x-8');
+    notification.addEventListener('transitionend', () => {
+      notification.remove();
+    });
+  }, 4000);
+};
+
+// --- API Functions (imported from api.js in a real app) ---
+const API_BASE_URL = '/api'; // Assuming a local API or proxy
+
+const fetchProducts = async () => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/products`);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching products:", error);
+    showNotification("Failed to load products. Please try again later.", "error");
+    return [];
+  }
+};
+
+const fetchProductById = async (id) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/products/${id}`);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error(`Error fetching product ${id}:`, error);
+    showNotification("Failed to load product details. Please try again later.", "error");
+    return null;
+  }
+};
+
+const fetchCart = async () => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/cart`);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching cart:", error);
+    showNotification("Failed to load cart.", "error");
+    return { items: [], total: 0 };
+  }
+};
+
+const addToCart = async (productId, quantity = 1) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/cart/add`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ productId, quantity }),
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    showNotification("Item added to cart!", "success");
+    updateCartDisplay(); // Refresh cart count/display
+    return data;
+  } catch (error) {
+    console.error("Error adding to cart:", error);
+    showNotification(error.message || "Failed to add item to cart.", "error");
+    return null;
+  }
+};
+
+const updateCartItem = async (productId, quantity) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/cart/update`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ productId, quantity }),
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    showNotification("Cart updated.", "success");
+    updateCartDisplay();
+    return data;
+  } catch (error) {
+    console.error("Error updating cart item:", error);
+    showNotification(error.message || "Failed to update cart item.", "error");
+    return null;
+  }
+};
+
+const removeFromCart = async (productId) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/cart/remove`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ productId }),
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    showNotification("Item removed from cart.", "success");
+    updateCartDisplay();
+    return data;
+  } catch (error) {
+    console.error("Error removing from cart:", error);
+    showNotification(error.message || "Failed to remove item from cart.", "error");
+    return null;
+  }
+};
+
+const processCheckout = async (orderData) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/checkout`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(orderData),
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    showNotification("Order placed successfully!", "success");
+    // Clear cart after successful checkout
+    localStorage.removeItem('cart'); // Assuming cart is also stored locally for persistence
+    updateCartDisplay();
+    // Redirect to order confirmation page
+    window.location.href = '/order-confirmation.html?orderId=' + data.orderId;
+    return data;
+  } catch (error) {
+    console.error("Error processing checkout:", error);
+    showNotification(error.message || "Failed to process checkout. Please check your details.", "error");
+    return null;
+  }
+};
+
+
+// --- DOM Manipulation & Event Handlers ---
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', () => {
+  initializePage();
+  setupEventListeners();
+});
+
+const initializePage = () => {
+  const page = document.body.dataset.page; // Expects data-page="homepage", data-page="products", etc. on body tag
+
+  if (page === 'homepage') {
+    loadFeaturedProducts();
+    setupHeroCarousel();
+  } else if (page === 'products') {
+    loadProductList();
+    setupProductFilters();
+  } else if (page === 'product-detail') {
+    loadProductDetails();
+    setupImageGallery();
+  } else if (page === 'cart') {
+    loadCart();
+  } else if (page === 'checkout') {
+    loadCheckoutForm();
+  }
+
+  // Always update cart display on load
+  updateCartDisplay();
+};
+
+const setupEventListeners = () => {
+  // Navigation toggle for mobile menu
+  const menuToggle = getElement('.mobile-menu-toggle');
+  const mobileNav = getElement('.mobile-nav');
+  if (menuToggle && mobileNav) {
+    menuToggle.addEventListener('click', () => {
+      mobileNav.classList.toggle('hidden');
+      menuToggle.classList.toggle('active');
+    });
+  }
+
+  // Add to Cart buttons
+  document.body.addEventListener('click', (event) => {
+    if (event.target.closest('.add-to-cart-btn')) {
+      const button = event.target.closest('.add-to-cart-btn');
+      const productId = button.dataset.productId;
+      const quantity = parseInt(button.dataset.quantity || '1', 10);
+      if (productId) {
+        addToCart(productId, quantity);
+      }
+    }
+  });
+
+  // Quantity change in cart
+  document.body.addEventListener('change', (event) => {
+    if (event.target.classList.contains('cart-item-quantity')) {
+      const input = event.target;
+      const productId = input.dataset.productId;
+      const newQuantity = parseInt(input.value, 10);
+      if (productId && !isNaN(newQuantity) && newQuantity > 0) {
+        updateCartItem(productId, newQuantity);
+        // Update total immediately for better UX before API response
+        const itemPriceElement = input.closest('tr').querySelector('.cart-item-price');
+        const itemSubtotalElement = input.closest('tr').querySelector('.cart-item-subtotal');
+        if(itemPriceElement && itemSubtotalElement) {
+            const price = parseFloat(itemPriceElement.dataset.price);
+            itemSubtotalElement.textContent = formatCurrency(price * newQuantity);
+            updateCartTotals();
+        }
+      } else if (newQuantity <= 0) {
+          // Optionally prompt before removing or directly remove
+          if(confirm("Are you sure you want to remove this item?")) {
+            removeFromCart(productId);
+          } else {
+            input.value = 1; // Reset if user cancels
+          }
+      }
+    }
+  });
+
+  // Remove from Cart button
+  document.body.addEventListener('click', (event) => {
+    if (event.target.closest('.remove-from-cart-btn')) {
+      const button = event.target.closest('.remove-from-cart-btn');
+      const productId = button.dataset.productId;
+      if (productId) {
+        // Add a confirmation step for better UX
+        if (confirm("Are you sure you want to remove this item from your cart?")) {
+            removeFromCart(productId);
+        }
+      }
+    }
+  });
+
+  // Checkout form submission
+  const checkoutForm = getElement('#checkout-form');
+  if (checkoutForm) {
+    checkoutForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+      if (validateCheckoutForm()) {
+        const orderData = collectCheckoutData();
+        processCheckout(orderData);
+      }
+    });
+  }
+
+  // Add smooth scrolling to anchor links
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+      e.preventDefault();
+      const targetElement = getElement(this.getAttribute('href'));
+      if (targetElement) {
+        targetElement.scrollIntoView({
+          behavior: 'smooth'
+        });
+      }
+    });
+  });
+
+  // Basic form validation for contact/other forms if any
+  const contactForm = getElement('#contact-form');
+  if(contactForm) {
+      contactForm.addEventListener('submit', (event) => {
+          event.preventDefault();
+          if(validateContactForm()) {
+              showNotification("Message sent successfully!", "success");
+              contactForm.reset();
+          }
+      });
+  }
+};
+
+// --- Page Specific Initializers ---
+
+const loadFeaturedProducts = async () => {
+  const productsContainer = getElement('.featured-products-grid');
+  if (!productsContainer) return;
+
+  // In a real app, this would fetch featured products specifically
+  const products = await fetchProducts();
+  const featuredProducts = products.slice(0, 4); // Display first 4 as featured
+
+  if (featuredProducts.length > 0) {
+    productsContainer.innerHTML = featuredProducts.map(product => `
+      <div class="card group overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 ease-in-out bg-white dark:bg-gray-800">
+        <a href="product-detail.html?id=${product.id}" class="block">
+          <img src="${product.imageUrl}" alt="${product.name}" class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300 ease-in-out">
+        </a>
+        <div class="p-4">
+          <h3 class="text-lg font-semibold mb-2 text-gray-900 dark:text-white truncate">${product.name}</h3>
+          <p class="text-gray-600 dark:text-gray-300 mb-3">${formatCurrency(product.price)}</p>
+          <button class="btn btn-secondary add-to-cart-btn w-full" data-product-id="${product.id}">Add to Cart</button>
+        </div>
+      </div>
+    `).join('');
+  } else {
+    productsContainer.innerHTML = '<p class="col-span-full text-center text-gray-500 dark:text-gray-400">No featured products found.</p>';
+  }
+};
+
+const setupHeroCarousel = () => {
+  const carousel = getElement('.hero-carousel');
+  if (!carousel) return;
+
+  const slides = getElements('.hero-carousel-slide');
+  const prevButton = getElement('.carousel-prev');
+  const nextButton = getElement('.carousel-next');
+  let currentIndex = 0;
+
+  if (slides.length === 0) return;
+
+  const updateCarousel = () => {
+    slides.forEach((slide, index) => {
+      slide.classList.toggle('hidden', index !== currentIndex);
+      slide.classList.toggle('opacity-0', index !== currentIndex);
+      slide.classList.toggle('opacity-100', index === currentIndex);
+    });
+  };
+
+  const goToSlide = (index) => {
+    if (index < 0) index = slides.length - 1;
+    if (index >= slides.length) index = 0;
+    currentIndex = index;
+    updateCarousel();
+  };
+
+  if (prevButton) {
+    prevButton.addEventListener('click', () => goToSlide(currentIndex - 1));
+  }
+  if (nextButton) {
+    nextButton.addEventListener('click', () => goToSlide(currentIndex + 1));
+  }
+
+  // Initial display
+  updateCarousel();
+
+  // Auto-advance (optional)
+  const interval = setInterval(() => {
+    goToSlide(currentIndex + 1);
+  }, 5000);
+
+  // Stop auto-advance on hover (optional)
+  carousel.addEventListener('mouseenter', () => clearInterval(interval));
+  carousel.addEventListener('mouseleave', () => {
+      // Restart interval if desired, or manage it more robustly
+  });
+};
+
+
+const loadProductList = async () => {
+  const productsContainer = getElement('.product-list-grid');
+  if (!productsContainer) return;
+
+  productsContainer.innerHTML = '<div class="col-span-full text-center py-10">Loading products...</div>'; // Loading indicator
+
+  const products = await fetchProducts();
+
+  if (products.length > 0) {
+    productsContainer.innerHTML = products.map(product => `
+      <div class="card group flex flex-col justify-between rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 ease-in-out bg-white dark:bg-gray-800 overflow-hidden">
+        <a href="product-detail.html?id=${product.id}" class="block p-4">
+          <img src="${product.imageUrl}" alt="${product.name}" class="w-full h-40 object-contain mx-auto mb-4">
+          <h3 class="text-lg font-semibold mb-2 text-gray-900 dark:text-white truncate">${product.name}</h3>
+          <p class="text-gray-600 dark:text-gray-300 mb-3">${formatCurrency(product.price)}</p>
+        </a>
+        <div class="p-4 pt-0">
+          <button class="btn btn-primary add-to-cart-btn w-full" data-product-id="${product.id}">Add to Cart</button>
+        </div>
+      </div>
+    `).join('');
+  } else {
+    productsContainer.innerHTML = '<p class="col-span-full text-center text-gray-500 dark:text-gray-400">No products found.</p>';
+  }
+};
+
+const setupProductFilters = () => {
+  // Implement filtering and sorting logic here based on user interactions
+  // Example: Attach event listeners to filter/sort controls
+  const filterButtons = getElements('.filter-btn');
+  filterButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      // Apply filter logic
+      console.log('Filter clicked:', button.dataset.filter);
+      // Re-render product list based on filter
+    });
+  });
+};
+
+const loadProductDetails = async () => {
+  const productDetailContainer = getElement('.product-detail-container');
+  if (!productDetailContainer) return;
+
+  const params = new URLSearchParams(window.location.search);
+  const productId = params.get('id');
+
+  if (!productId) {
+    productDetailContainer.innerHTML = '<p class="text-center text-red-500">Product ID not found.</p>';
+    return;
+  }
+
+  productDetailContainer.innerHTML = '<div class="col-span-full text-center py-10">Loading product details...</div>'; // Loading indicator
+
+  const product = await fetchProductById(productId);
+
+  if (product) {
+    productDetailContainer.innerHTML = `
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div>
+          <div class="product-image-gallery mb-4">
+            <img id="main-product-image" src="${product.imageUrl}" alt="${product.name}" class="w-full h-auto object-cover rounded-lg shadow-md">
+            ${product.additionalImageUrls ? `
+              <div class="flex space-x-2 mt-2 overflow-x-auto pb-2">
+                ${[product.imageUrl, ...product.additionalImageUrls].map((imgUrl, index) => `
+                  <img src="${imgUrl}" alt="${product.name} - Image ${index + 1}" class="thumbnail-img w-20 h-20 object-cover rounded cursor-pointer border-2 border-transparent hover:border-blue-500" data-image-src="${imgUrl}">
+                `).join('')}
+              </div>
+            ` : ''}
+          </div>
+        </div>
+        <div>
+          <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-3">${product.name}</h1>
+          <p class="text-2xl font-semibold text-blue-600 dark:text-blue-400 mb-5">${formatCurrency(product.price)}</p>
+          <p class="text-gray-700 dark:text-gray-300 mb-6 leading-relaxed">${product.description}</p>
+
+          <div class="specifications mb-6">
+            <h4 class="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-3">Specifications</h4>
+            <ul class="list-disc list-inside text-gray-600 dark:text-gray-300 space-y-1">
+              ${Object.entries(product.specifications || {}).map(([key, value]) => `<li><strong>${key}:</strong> ${value}</li>`).join('')}
+            </ul>
+          </div>
+
+          <div class="flex items-center space-x-4 mb-6">
+            <label for="quantity" class="text-gray-700 dark:text-gray-300 font-medium">Quantity:</label>
+            <input type="number" id="quantity" value="1" min="1" class="w-20 p-2 border border-gray-300 dark:border-gray-600 rounded focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:outline-none dark:bg-gray-700 dark:text-white">
+          </div>
+
+          <button class="btn btn-primary btn-lg add-to-cart-btn w-full md:w-auto" data-product-id="${product.id}">Add to Cart</button>
+        </div>
+      </div>
+      ${product.reviews && product.reviews.length > 0 ? `
+        <div class="mt-12 col-span-full">
+          <h3 class="text-3xl font-bold text-gray-900 dark:text-white mb-6">Customer Reviews</h3>
+          <div class="space-y-6">
+            ${product.reviews.map(review => `
+              <div class="card p-6 bg-white dark:bg-gray-800 shadow rounded-lg">
+                <div class="flex items-center mb-3">
+                  <div class="font-bold text-lg text-gray-800 dark:text-gray-100">${review.author}</div>
+                  <div class="ml-auto text-yellow-500">
+                    ${'★'.repeat(review.rating)}${'☆'.repeat(5 - review.rating)}
+                  </div>
+                </div>
+                <p class="text-gray-600 dark:text-gray-300">${review.comment}</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">${new Date(review.date).toLocaleDateString()}</p>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      ` : '<div class="mt-12 col-span-full"><p class="text-center text-gray-500 dark:text-gray-400">No reviews yet for this product.</p></div>'}
+    `;
+  } else {
+    productDetailContainer.innerHTML = '<p class="text-center text-red-500">Product not found or could not be loaded.</p>';
+  }
+};
+
+const setupImageGallery = () => {
+  const mainImage = getElement('#main-product-image');
+  if (!mainImage) return;
+
+  document.body.addEventListener('click', (event) => {
+    if (event.target.classList.contains('thumbnail-img')) {
+      mainImage.src = event.target.dataset.imageSrc;
+      // Highlight active thumbnail
+      getElements('.thumbnail-img').forEach(thumb => thumb.classList.remove('border-blue-500'));
+      event.target.classList.add('border-blue-500');
+    }
+  });
+};
+
+const loadCart = async () => {
+  const cartItemsContainer = getElement('#cart-items-container');
+  const cartTotalElement = getElement('#cart-total');
+  const checkoutButtonContainer = getElement('#checkout-button-container');
+
+  if (!cartItemsContainer || !cartTotalElement || !checkoutButtonContainer) {
+    console.error("Cart elements not found in the DOM.");
+    return;
+  }
+
+  cartItemsContainer.innerHTML = '<tr><td colspan="4" class="text-center py-10">Loading cart...</td></tr>'; // Loading indicator
+
+  const cart = await fetchCart();
+
+  if (cart.items.length > 0) {
+    cartItemsContainer.innerHTML = cart.items.map(item => `
+      <tr class="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
+        <td class="py-4 px-2 md:px-4 flex items-center space-x-3">
+          <img src="${item.imageUrl}" alt="${item.name}" class="w-16 h-16 object-cover rounded">
+          <div>
+            <p class="font-medium text-gray-900 dark:text-white">${item.name}</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400">${item.productId}</p>
+          </div>
+        </td>
+        <td class="py-4 px-2 md:px-4 text-center">
+          <span class="cart-item-price" data-price="${item.price}">${formatCurrency(item.price)}</span>
+        </td>
+        <td class="py-4 px-2 md:px-4 text-center">
+          <input type="number" value="${item.quantity}" min="1" data-product-id="${item.productId}" class="cart-item-quantity w-16 p-2 border border-gray-300 dark:border-gray-600 rounded focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 dark:bg-gray-700 dark:text-white text-center">
+        </td>
+        <td class="py-4 px-2 md:px-4 text-center font-semibold text-gray-900 dark:text-white cart-item-subtotal" data-subtotal="${item.price * item.quantity}">
+          ${formatCurrency(item.price * item.quantity)}
+        </td>
+        <td class="py-4 px-2 md:px-4 text-center">
+          <button class="btn btn-danger btn-sm remove-from-cart-btn" data-product-id="${item.productId}" aria-label="Remove ${item.name}">
+            <svg class="w-5 h-5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+          </button>
+        </td>
+      </tr>
+    `).join('');
+
+    updateCartTotals(); // Calculate and display total
+    checkoutButtonContainer.innerHTML = '<a href="checkout.html" class="btn btn-primary btn-lg w-full text-center">Proceed to Checkout</a>';
+
+  } else {
+    cartItemsContainer.innerHTML = '<tr><td colspan="4" class="text-center py-10 text-gray-500 dark:text-gray-400">Your cart is empty.</td></tr>';
+    cartTotalElement.textContent = formatCurrency(0);
+    checkoutButtonContainer.innerHTML = ''; // No checkout button if cart is empty
+  }
+};
+
+const updateCartDisplay = () => {
+  const cartCountElement = getElement('.cart-count');
+  if (!cartCountElement) return;
+
+  // Try to get cart count from local storage or fetch count from API
+  const cart = JSON.parse(localStorage.getItem('cart')) || { items: [] };
+  const itemCount = cart.items.reduce((sum, item) => sum + item.quantity, 0);
+
+  // In a real app, you'd fetch the actual count from the API more reliably.
+  // This is a fallback for persistence and immediate UI updates.
+  // If API is available, use its data.
+  // For now, we use local storage as a proxy.
+
+  if (itemCount > 0) {
+    cartCountElement.textContent = itemCount;
+    cartCountElement.classList.remove('hidden');
+  } else {
+    cartCountElement.classList.add('hidden');
+  }
+};
+
+const updateCartTotals = () => {
+    const cartTotalElement = getElement('#cart-total');
+    if (!cartTotalElement) return;
+
+    let subtotal = 0;
+    getElements('.cart-item-subtotal').forEach(subtotalElement => {
+        subtotal += parseFloat(subtotalElement.dataset.subtotal);
+    });
+
+    cartTotalElement.textContent = formatCurrency(subtotal);
+
+    // Update local storage cart total as well if used for persistence
+    const currentCart = JSON.parse(localStorage.getItem('cart')) || { items: [] };
+    currentCart.total = subtotal;
+    localStorage.setItem('cart', JSON.stringify(currentCart));
+};
+
+
+const loadCheckoutForm = () => {
+  // Pre-fill form if data exists (e.g., from previous session or local storage)
+  const savedCart = JSON.parse(localStorage.getItem('cart'));
+  if (savedCart && savedCart.items.length > 0) {
+      // Display order summary if possible
+      const orderSummary = getElement('#order-summary');
+      if (orderSummary) {
+          orderSummary.innerHTML = savedCart.items.map(item => `
+              <div class="flex justify-between py-2">
+                  <span>${item.name} x ${item.quantity}</span>
+                  <span class="font-semibold">${formatCurrency(item.price * item.quantity)}</span>
+              </div>
+          `).join('') + `
+              <div class="flex justify-between font-bold pt-3 border-t border-gray-300 dark:border-gray-600">
+                  <span>Total</span>
+                  <span>${formatCurrency(savedCart.total)}</span>
+              </div>
+          `;
+      }
+  } else {
+      // Redirect to cart if no items
+      window.location.href = '/cart.html';
+  }
+
+  // Add event listeners for form validation
+  const checkoutForm = getElement('#checkout-form');
+  if (checkoutForm) {
+    // Add real-time validation listeners for inputs
+    checkoutForm.querySelectorAll('input, select, textarea').forEach(input => {
+      input.addEventListener('blur', () => validateInput(input));
+      input.addEventListener('input', () => validateInput(input)); // Real-time validation
+    });
+  }
+};
+
+const validateInput = (input) => {
+  const validationMessageElement = getElement(`.${input.id}-validation-message`);
+  let isValid = true;
+  let message = '';
+
+  if (input.validity.valueMissing) {
+    isValid = false;
+    message = 'This field is required.';
+  } else if (input.type === 'email' && input.validity.typeMismatch) {
+    isValid = false;
+    message = 'Please enter a valid email address.';
+  } else if (input.type === 'tel' && !/^\+?[1-9]\d{1,14}$/.test(input.value)) { // Basic E.164 format check
+    isValid = false;
+    message = 'Please enter a valid phone number (e.g., +11234567890).';
+  } else if (input.id === 'zip-code' && !/^\d{5}(?:[-\s]\d{4})?$/.test(input.value)) { // US Zip code format
+     isValid = false;
+     message = 'Please enter a valid ZIP code (e.g., 12345 or 12345-6789).';
+  }
+  // Add more specific validations as needed (e.g., credit card)
+
+  if (validationMessageElement) {
+    if (!isValid) {
+      validationMessageElement.textContent = message;
+      validationMessageElement.classList.remove('hidden');
+      input.classList.add('border-red-500', 'dark:border-red-400');
+      input.classList.remove('border-green-500', 'dark:border-green-400');
+    } else {
+      validationMessageElement.classList.add('hidden');
+      input.classList.remove('border-red-500', 'dark:border-red-400');
+      if (input.value.length > 0) { // Only show green if there's content and it's valid
+        input.classList.add('border-green-500', 'dark:border-green-400');
+      }
+    }
+  }
+  return isValid;
+};
+
+
+const validateCheckoutForm = () => {
+  const form = getElement('#checkout-form');
+  let isFormValid = true;
+
+  if (!form) return false;
+
+  form.querySelectorAll('input, select, textarea').forEach(input => {
+    if (!validateInput(input)) {
+      isFormValid = false;
+    }
+  });
+
+  return isFormValid;
+};
+
+const collectCheckoutData = () => {
+  const form = getElement('#checkout-form');
+  const formData = new FormData(form);
+  const data = {};
+  formData.forEach((value, key) => {
+    data[key] = value;
+  });
+
+  // Add cart items and total to the data object
+  const cart = JSON.parse(localStorage.getItem('cart')) || { items: [], total: 0 };
+  data.cartItems = cart.items;
+  data.totalAmount = cart.total;
+
+  return data;
+};
+
+
+// --- Mock API Data (replace with actual API calls in api.js) ---
+// This section is for demonstration if a backend/api.js is not yet implemented.
+// In a real setup, these would be replaced by calls to api.js functions.
+
+// Mock products data (should be in products.js or fetched from API)
+const mockProducts = [
+  { id: 'p1', name: 'Quantum Phone X', price: 999.99, description: 'The future of mobile technology, packed with cutting-edge features.', imageUrl: 'https://via.placeholder.com/300x200/0000FF/FFFFFF?text=Quantum+X', additionalImageUrls: ['https://via.placeholder.com/300x200/0033FF/FFFFFF?text=Quantum+X+Side', 'https://via.placeholder.com/300x200/0066FF/FFFFFF?text=Quantum+X+Back'], specifications: { 'Display': '6.7" Super AMOLED', 'Camera': '108MP', 'Battery': '5000mAh', 'Storage': '256GB' }, reviews: [{ author: 'Alice', rating: 5, comment: 'Amazing phone!', date: '2023-10-26' }] },
+  { id: 'p2', name: 'Stellaris Pro', price: 1249.00, description: 'Experience unparalleled performance and a stunning display.', imageUrl: 'https://via.placeholder.com/300x200/FF0000/FFFFFF?text=Stellaris+Pro', specifications: { 'Display': '6.8" Dynamic AMOLED', 'Camera': '120MP', 'Battery': '5500mAh', 'Storage': '512GB' }, reviews: [] },
+  { id: 'p3', name: 'Nebula Lite', price: 599.50, description: 'Affordable power for everyday use.', imageUrl: 'https://via.placeholder.com/300x200/00FF00/FFFFFF?text=Nebula+Lite', specifications: { 'Display': '6.5" LCD', 'Camera': '48MP', 'Battery': '4500mAh', 'Storage': '128GB' }, reviews: [{ author: 'Bob', rating: 4, comment: 'Good value for money.', date: '2023-10-25' }] },
+  { id: 'p4', name: 'Orbit Z', price: 799.00, description: 'Sleek design meets powerful internals.', imageUrl: 'https://via.placeholder.com/300x200/FFFF00/000000?text=Orbit+Z', specifications: { 'Display': '6.6" OLED', 'Camera': '64MP', 'Battery': '4800mAh', 'Storage': '256GB' }, reviews: [] },
+  { id: 'p5', name: 'Cosmos Fold', price: 1899.00, description: 'The revolutionary foldable phone experience.', imageUrl: 'https://via.placeholder.com/300x200/FFA500/FFFFFF?text=Cosmos+Fold', specifications: { 'Display': '7.6" Foldable AMOLED', 'Camera': '50MP', 'Battery': '4400mAh', 'Storage': '512GB' }, reviews: [{ author: 'Charlie', rating: 5, comment: 'Mind-blowing!', date: '2023-10-27' }] },
+];
+
+// Mock cart data (should be managed by API/backend)
+let mockCart = {
+  items: [],
+  total: 0,
+};
+
+// Function to get mock products (simulates API call)
+const getMockProducts = async () => {
+  await new Promise(resolve => setTimeout(resolve, 300)); // Simulate network delay
+  return mockProducts;
+};
+
+// Function to get mock product by ID (simulates API call)
+const getMockProductById = async (id) => {
+  await new Promise(resolve => setTimeout(resolve, 200)); // Simulate network delay
+  const product = mockProducts.find(p => p.id === id);
+  return product || null;
+};
+
+// Function to get mock cart (simulates API call)
+const getMockCart = async () => {
+    await new Promise(resolve => setTimeout(resolve, 200)); // Simulate network delay
+    // Load from localStorage if available, otherwise use mockCart
+    const storedCart = localStorage.getItem('cart');
+    if (storedCart) {
+        mockCart = JSON.parse(storedCart);
+    }
+    // Recalculate total just in case
+    mockCart.total = mockCart.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    return { ...mockCart }; // Return a copy
+};
+
+// Function to add to mock cart (simulates API call)
+const addToMockCart = async (productId, quantity = 1) => {
+    await new Promise(resolve => setTimeout(resolve, 300)); // Simulate network delay
+    const product = mockProducts.find(p => p.id === productId);
+    if (!product) return { success: false, message: 'Product not found' };
+
+    const existingItemIndex = mockCart.items.findIndex(item => item.productId === productId);
+
+    if (existingItemIndex > -1) {
+        mockCart.items[existingItemIndex].quantity += quantity;
+    } else {
+        mockCart.items.push({
+            productId: product.id,
+            name: product.name,
+            price: product.price,
+            imageUrl: product.imageUrl,
+            quantity: quantity,
+        });
+    }
+    mockCart.total = mockCart.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    localStorage.setItem('cart', JSON.stringify(mockCart));
+    return { success: true, cart: { ...mockCart } };
+};
+
+// Function to remove from mock cart (simulates API call)
+const removeFromMockCart = async (productId) => {
+    await new Promise(resolve => setTimeout(resolve, 300)); // Simulate network delay
+    mockCart.items = mockCart.items.filter(item => item.productId !== productId);
+    mockCart.total = mockCart.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    localStorage.setItem('cart', JSON.JSON.stringify(mockCart));
+    return { success: true, cart: { ...mockCart } };
+};
+
+// Function to update quantity in mock cart (simulates API call)
+const updateMockCartItem = async (productId, quantity) => {
+    await new Promise(resolve => setTimeout(resolve, 300)); // Simulate network delay
+    const itemIndex = mockCart.items.findIndex(item => item.productId === productId);
+    if (itemIndex > -1) {
+        if (quantity > 0) {
+            mockCart.items[itemIndex].quantity = quantity;
+        } else {
+            mockCart.items.splice(itemIndex, 1); // Remove item if quantity is 0 or less
+        }
+        mockCart.total = mockCart.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+        localStorage.setItem('cart', JSON.stringify(mockCart));
+        return { success: true, cart: { ...mockCart } };
+    }
+    return { success: false, message: 'Item not found in cart' };
+};
+
+// --- Replace API calls with Mock calls if needed ---
+// Example:
+// const fetchProducts = getMockProducts;
+// const fetchProductById = getMockProductById;
+// const fetchCart = getMockCart;
+// const addToCart = addToMockCart;
+// const removeFromCart = removeFromMockCart;
+// const updateCartItem = updateMockCartItem;
+
+// If using actual API, ensure the API_BASE_URL and endpoints match your backend.
+// For this example, we assume the mock functions are implicitly used if API calls fail or are commented out.
+// In a real project, you'd explicitly choose or conditionally use mock/real API functions.
+
+// --- Initialize ---
+// The DOMContentLoaded listener at the top handles the initialization.
